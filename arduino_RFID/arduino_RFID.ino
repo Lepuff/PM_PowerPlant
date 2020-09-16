@@ -11,13 +11,10 @@ SoftwareSerial BTserial(A4, A3); //RX | TX
 byte readCard[4];
 String masterTag = "565EE2F7";
 String tagID = "";
-struct userInfo {
-  String tagID = "";
-  bool loggedIn = false;
-};
+bool loggedIn;
+bool displayRooms;
 
-
-userInfo user;
+//userInfo user;
 
 MFRC522 mfrc522(SS_PIN, RST_PIN);
 LiquidCrystal lcd(7, 6, 5, 4, 3, 2); //Parameters: (rs, enable, d4, d5, d6, d7)
@@ -26,72 +23,66 @@ void setup() {
   SPI.begin(); //SPI bus
   mfrc522.PCD_Init(); //MFRC522 (RFID)
 
-  //userInfo user;
-  //analogWrite(A5, contrast);
+  displayRooms = false;
   lcd.begin(16, 2); //LCD screen
 
   lcd.clear();
   lcd.setCursor(0, 0);
   lcd.print(" Scan Your Card ");
-  
+
   Serial.begin(9600);
   BTserial.begin(9600);
 }
 
 void loop() {
-  
+
+  if (displayRooms) {
+
+  }
+  else {
+    lcd.clear();
+    lcd.print(" Scan Your Card ");
+  }
   //Wait until new tag is available
-  while (getID()){
+  while (getID()) {
     lcd.clear();
     lcd.setCursor(0, 0);
 
-    if (user.tagID
-    if (!user.loggedIn){
-      //Serial.println("Logged in\n");
-      lcd.print("Logged in");
-      user.loggedIn = true;
-      Serial.println(user.tagID);
-    }
-    else{
-      //Serial.println("Logged out\n");
-      lcd.print("Logged out");
-      user.loggedIn = false;
-    }
+    lcd.print("ID : ");
+    lcd.setCursor(0, 1);
+    lcd.print(tagID);
+    delay (1000);
   }
 
-  delay (1500);
-  lcd.clear();
-  lcd.print(" Scan Your Card ");
-  
-  lcd.setCursor(0, 0);
-  lcd.print(" Scan Your Card ");  
-  // Keep reading from BT-unit and send to Arduino Serial Monitor
   if (BTserial.available()) {
-    Serial.write(BTserial.read());
+    Serial.println(BTserial.readString());
+  }
+  if (Serial.available()) {
+    BTserial.println(Serial.readString());
   }
 
-  // Keep reading from Arduino Serial Monitor and send to BT-unit
-  if (Serial.available()) {
-    BTserial.write(Serial.read());
-  }
 }
 
 //Read new tag if available
-boolean getID() 
+boolean getID()
 {
   // Getting ready for Reading PICCs
   if ( ! mfrc522.PICC_IsNewCardPresent()) { //If a new PICC placed to RFID reader continue
-  return false;
+    return false;
   }
   if ( ! mfrc522.PICC_ReadCardSerial()) { //Since a PICC placed get Serial and continue
-  return false;
+    return false;
   }
-  user.tagID = "";
+  tagID = "";
   for ( uint8_t i = 0; i < 4; i++) { // The MIFARE PICCs that we use have 4 byte UID
-  //readCard[i] = mfrc522.uid.uidByte[i];
-  user.tagID.concat(String(mfrc522.uid.uidByte[i], HEX)); // Adds the 4 bytes in a single String variable
+    readCard[i] = mfrc522.uid.uidByte[i];
+    Serial.print(readCard[i], HEX);
+    BTserial.print(readCard[i], HEX);
+    tagID.concat(String(mfrc522.uid.uidByte[i], HEX)); // Adds the 4 bytes in a single String variable
   }
-  user.tagID.toUpperCase();
+  Serial.println();
+  BTserial.println();
+  tagID.toUpperCase();
   mfrc522.PICC_HaltA(); // Stop reading
   return true;
 }
