@@ -7,11 +7,12 @@ const int RST_PIN = 9;
 const int SS_PIN = 10;
 const int  buttonPin = 1;
 
-int buttonState = 1;         // current state of the button
+int buttonState;         // current state of the button
 int lastButtonState = 0;     // previous state of the button
 int roomNumber = 0;
 int radiationLevel = 30;
 bool loginStatus = false;
+int firstChar;
 //#define RST_PIN 9
 //#define SS_PIN 10
 
@@ -48,7 +49,19 @@ void loop() {
   // read the pushbutton input pin:
   /*buttonState = digitalRead(buttonPin);
 
-  if (buttonstState == LOW) {
+  if (buttonState = HIGH && previous == LOW && millis() - time > debounce){
+    if (buttonState == HIGH){
+    
+    }
+    lcd.clear();
+    lcd.print(" Yo");
+  }
+  if (buttonState == LOW){
+    lcd.clear();
+    lcd.print(" Waddup");
+  }*/
+
+  /*if (buttonState == LOW) {
     lcd.clear();
     lcd.print("Room: ");
     lcd.print(roomNumber);
@@ -87,22 +100,33 @@ void loop() {
     Serial.print(tagID);
     BTserial.read();
     delay (1000);
-  }
-  lcd.clear();
-  lcd.print(" Scan Your Card ");
+    }
+    //lcd.clear();
+    //lcd.print(" Scan Your Card ");
 
-  if (BTserial.available()) {
+    /*if (BTserial.available()) {
     Serial.println(BTserial.readString());
-  }
-  if (Serial.available()) {
+    }
+    if (Serial.available()) {
     BTserial.println(Serial.readString());
-  }
+    }*/
+
+    if (BTserial.available()){
+      lcd.clear();
+      firstChar = BTserial.readString().charAt(0);
+      
+      if (firstChar == '0'){
+        lcd.print(" Logged in");
+        Serial.println(BTserial.readString().charAt(0));
+      }
+      if (firstChar == '1'){
+        lcd.print(" Logged out");
+        Serial.println(BTserial.readString().charAt(0));
+      }
+      //lcd.print(BTserial.readString().charAt(0)); //reads the char at position 0
+    }
 
 }
-
-/*void function(tagID, loginStatus){
-
-  }*/
 
 //Read new tag if available
 boolean getID()
@@ -114,7 +138,7 @@ boolean getID()
   if ( ! mfrc522.PICC_ReadCardSerial()) { //Since a PICC placed get Serial and continue
     return false;
   }
-  tagID = "";
+  tagID = "1";
   for ( uint8_t i = 0; i < 4; i++) { // The MIFARE PICCs that we use have 4 byte UID
     //readCard[i] = mfrc522.uid.uidByte[i];
     //Serial.print(readCard[i], HEX);
