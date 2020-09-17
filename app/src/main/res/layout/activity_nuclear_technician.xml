@@ -141,6 +141,7 @@
 
     <Button
         android:layout_gravity="center_horizontal"
+        android:id="@+id/btn_ts"
         android:layout_marginTop="80dp"
         android:layout_width="340dp"
         android:layout_height="130dp"
