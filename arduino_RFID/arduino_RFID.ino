@@ -93,16 +93,16 @@ void loop() {
     lcd.clear();
     lcd.setCursor(0, 0);
 
-    lcd.print("ID : ");
+    /*lcd.print("ID : ");
     lcd.setCursor(0, 1);
-    lcd.print(tagID);
+    lcd.print(tagID);*/
     BTserial.print(tagID);
     Serial.print(tagID);
     BTserial.read();
     delay (1000);
     }
-    //lcd.clear();
-    //lcd.print(" Scan Your Card ");
+    lcd.clear();
+    lcd.print(" Scan Your Card ");
 
     /*if (BTserial.available()) {
     Serial.println(BTserial.readString());
@@ -123,6 +123,7 @@ void loop() {
         lcd.print(" Logged out");
         Serial.println(BTserial.readString().charAt(0));
       }
+      delay(1000);
       //lcd.print(BTserial.readString().charAt(0)); //reads the char at position 0
     }
 
