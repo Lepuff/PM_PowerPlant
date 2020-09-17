@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "466266952455",
+    "firebase_url": "https://damage-control-5dd6f.firebaseio.com",
+    "project_id": "damage-control-5dd6f",
+    "storage_bucket": "damage-control-5dd6f.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:466266952455:android:130ceeecc8cce1a951eba2",
+        "android_client_info": {
+          "package_name": "com.example.application"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "466266952455-66ann34s0f3m4jhcf7tit68v3e8capfu.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB7YH3NrMduNnfKa588oGrZAM3rNpUIk_Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "466266952455-66ann34s0f3m4jhcf7tit68v3e8capfu.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
