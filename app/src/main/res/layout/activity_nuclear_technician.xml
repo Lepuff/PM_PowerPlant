@@ -13,7 +13,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:textColor="@color/colorWhite"
+        android:textColor="@color/colorBlueGrey"
         android:textSize="26sp"
         android:layout_marginTop="15dp"
         android:text="@string/nuclear_technician" />
@@ -30,10 +30,10 @@
         >
 
         <TextView
-            android:textColor="@color/colorBlack"
+            android:textColor="@color/colorBlueGrey"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Radiation time limit:"
+            android:text="@string/radiation_time_limit"
             android:layout_marginRight="10dp"
             android:layout_marginEnd="10dp"
             android:textSize="16sp"/>
@@ -64,8 +64,8 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Unit"
-                android:textColor="@color/colorWhite"
+                android:text="@string/unit"
+                android:textColor="@color/colorBlueGrey"
                 android:textSize="26sp"/>
 
             <TextView
@@ -92,8 +92,8 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Safety limit"
-                android:textColor="@color/colorWhite"
+                android:text="@string/safety_limit"
+                android:textColor="@color/colorBlueGrey"
                 android:textSize="26sp"/>
 
             <TextView
@@ -118,8 +118,8 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Room"
-                android:textColor="@color/colorWhite"
+                android:text="@string/room"
+                android:textColor="@color/colorBlueGrey"
                 android:textSize="26sp"/>
 
             <TextView
@@ -140,15 +140,31 @@
     </LinearLayout>
 
     <Button
+        android:id="@+id/timeStamp_button"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="80dp"
         android:layout_width="340dp"
         android:layout_height="130dp"
         android:background="@color/colorWhite"
+        android:textColor="@color/colorBlueGrey"
         android:textSize="20sp"
-        android:text="Timestamps">
+        android:text="@string/timestamps">
 
     </Button>
+
+    <Button
+        android:id="@+id/nuclear_button"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="30dp"
+        android:layout_width="340dp"
+        android:layout_height="130dp"
+        android:background="@color/colorWhite"
+        android:textColor="@color/colorBlueGrey"
+        android:textSize="20sp"
+        android:text="Power plant">
+
+    </Button>
+
 
 
 </LinearLayout>

@@ -4,12 +4,12 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/colorGrey"
-    tools:context=".TimeStampActivity">
+    tools:context=".PowerPlantManagerActivity">
 
 
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/timeStamp_recyclerListView"
+        android:id="@+id/technician_recyclerListView"
         android:scrollbars="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

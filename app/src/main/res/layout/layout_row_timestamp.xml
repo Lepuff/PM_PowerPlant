@@ -21,11 +21,12 @@
             android:layout_height="wrap_content">
 
             <TextView
-                android:textStyle="italic"
+                android:textStyle="italic|bold"
+                android:textSize="16sp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="@color/colorWhite"
-                android:text="Clocked In:"/>
+                android:textColor="@color/colorBlueGrey"
+                android:text="@string/clocked_in"/>
 
             <TextView
                 android:id="@+id/txt_row_clocked_in"
@@ -44,13 +45,15 @@
             android:layout_height="wrap_content">
 
             <TextView
-                android:textStyle="italic"
-                android:textColor="@color/colorWhite"
+                android:textStyle="italic|bold"
+                android:textSize="16sp"
+                android:textColor="@color/colorBlueGrey"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Clocked Out:"/>
+                android:text="@string/clocked_out"/>
 
             <TextView
+                android:gravity="end"
                 android:id="@+id/txt_row_clocked_out"
                 android:textColor="@color/colorWhite"
                 android:layout_width="wrap_content"
@@ -76,11 +79,12 @@
             android:layout_height="wrap_content">
 
             <TextView
-                android:textStyle="italic"
-                android:textColor="@color/colorWhite"
+                android:textStyle="italic|bold"
+                android:textSize="16sp"
+                android:textColor="@color/colorBlueGrey"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Hours:"/>
+                android:text="@string/hours"/>
 
             <TextView
                 android:id="@+id/txt_row_hours"
@@ -99,11 +103,12 @@
             android:layout_height="wrap_content">
 
             <TextView
-                android:textStyle="italic"
-                android:textColor="@color/colorWhite"
+                android:textStyle="italic|bold"
+                android:textSize="16sp"
+                android:textColor="@color/colorBlueGrey"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Radiation Exposed:"/>
+                android:text="@string/radiation_exposed"/>
 
             <TextView
                 android:id="@+id/txt_row_radiation_exposed"
