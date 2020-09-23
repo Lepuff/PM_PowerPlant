@@ -1,22 +1,23 @@
 package com.example.application
 
+import android.app.Notification
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.PendingIntent
+import android.content.Context
+import android.content.Intent
+import android.graphics.BitmapFactory
+import android.graphics.Color
+import android.os.Build
 import kotlinx.android.synthetic.main.activity_nuclear_technician.*
 import com.google.firebase.firestore.FirebaseFirestore
-import androidx.core.app.ComponentActivity
-import androidx.core.app.ComponentActivity.ExtraData
-import androidx.core.content.ContextCompat.getSystemService
-import android.icu.lang.UCharacter.GraphemeClusterBreak.T
-
-
-
-import android.graphics.Color
 import android.os.Bundle
-import kotlinx.android.synthetic.main.activity_main.*
 import android.os.CountDownTimer
 import android.util.Log
+import android.widget.RemoteViews
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import com.google.firebase.firestore.DocumentSnapshot
+import kotlinx.android.synthetic.main.activity_main.*
 
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -24,6 +25,13 @@ import java.util.concurrent.TimeUnit
 
 
 class NuclearTechnicianActivity : AppCompatActivity() {
+
+    lateinit var notificationManager : NotificationManager
+    lateinit var notificationChannel : NotificationChannel
+    lateinit var builder : Notification.Builder
+    private val channelId = "com.example.application"
+    private val description = "Test notification"
+
 
     var db = FirebaseFirestore.getInstance()
 
@@ -54,6 +62,8 @@ class NuclearTechnicianActivity : AppCompatActivity() {
 
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_nuclear_technician)
+
+
 
 
 
@@ -91,6 +101,7 @@ class NuclearTechnicianActivity : AppCompatActivity() {
             timeLeft = (safteyLimit / (reactorOutput * rC) / pcClothes) * 1000
             millisInFuture = timeLeft.toLong()
             timer(millisInFuture, countDownInterval).start()
+            Log.d("Test",timeRemaining)
         }
 
         btn_ts.setOnClickListener {
@@ -112,7 +123,13 @@ class NuclearTechnicianActivity : AppCompatActivity() {
                 startTimer()
             }
         }
+
+        notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+
+
     }
+
+
 
     private fun timer(millisInFuture:Long,countDownInterval:Long):CountDownTimer{
         return object: CountDownTimer(millisInFuture,countDownInterval){
@@ -140,6 +157,10 @@ class NuclearTechnicianActivity : AppCompatActivity() {
                     //outside powerplant
                 }
 
+                if (timeRemaining == "01 day: 22 hour: 17 min: 40 sec"){
+                    notification()
+                }
+
                 timeRemaining = timeString(untilFinished)
                 txt_radiation_time.text = timeRemaining
                 humanExposure += (reactorOutput * rC) / pcClothes
@@ -152,17 +173,13 @@ class NuclearTechnicianActivity : AppCompatActivity() {
             override fun onFinish() {
                 val builder = AlertDialog.Builder(this@NuclearTechnicianActivity)
                 builder.setTitle("WARNING")
-                builder.setMessage("GET OUT AND CHECK OUT NOW")
+                builder.setMessage("GET OUT NOW")
                 //setBackgroundColor(Color.RED)
                 builder.setNeutralButton("Ok", {dialog, which -> })
                 val dialog: AlertDialog = builder.create()
                 dialog.show()
-
                 // button_start.isEnabled = true
-
             }
-
-
         }
 
     }
@@ -189,6 +206,39 @@ class NuclearTechnicianActivity : AppCompatActivity() {
             "%02d day: %02d hour: %02d min: %02d sec",
             days, hours, minutes,seconds
         )
+    }
+
+    private fun notification(){
+
+            val intent = Intent(this,NuclearTechnicianActivity::class.java)
+            val pendingIntent = PendingIntent.getActivity(this,0,intent,PendingIntent.FLAG_UPDATE_CURRENT)
+
+            val contentView = RemoteViews(packageName,R.layout.activity_notification)
+            contentView.setTextViewText(R.id.tv_title,"Alert")
+            contentView.setTextViewText(R.id.tv_content,"You SUCK MY PEPE" )
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                notificationChannel = NotificationChannel(channelId,description,NotificationManager.IMPORTANCE_HIGH)
+                notificationChannel.enableLights(true)
+                notificationChannel.lightColor = Color.GREEN
+                notificationChannel.enableVibration(false)
+                notificationManager.createNotificationChannel(notificationChannel)
+
+                builder = Notification.Builder(this,channelId)
+                    .setContent(contentView)
+                    .setSmallIcon(R.drawable.ic_launcher_foreground)
+                    .setLargeIcon(BitmapFactory.decodeResource(this.resources,R.drawable.ic_launcher_foreground))
+                    .setContentIntent(pendingIntent)
+            }else{
+
+                builder = Notification.Builder(this)
+                    .setContent(contentView)
+                    .setSmallIcon(R.drawable.ic_launcher_foreground)
+                    .setLargeIcon(BitmapFactory.decodeResource(this.resources,R.drawable.ic_launcher_foreground))
+                    .setContentIntent(pendingIntent)
+            }
+            notificationManager.notify(1234,builder.build())
+
     }
 
 
