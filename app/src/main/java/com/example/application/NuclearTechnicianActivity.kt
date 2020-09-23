@@ -8,23 +8,19 @@ import android.widget.Button
 class NuclearTechnicianActivity : AppCompatActivity() {
 
 
-    private lateinit var button: Button
-    private lateinit var button2: Button
+    private lateinit var timeStampBtn: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_nuclear_technician)
 
-        button = findViewById(R.id.timeStamp_button)
-        button2 = findViewById(R.id.nuclear_button)
+        timeStampBtn = findViewById(R.id.timeStamp_button)
 
-        button.setOnClickListener {
+        timeStampBtn.setOnClickListener {
             startActivity(Intent(this@NuclearTechnicianActivity, TimeStampActivity::class.java))
         }
 
-        button2.setOnClickListener {
-            startActivity(Intent(this@NuclearTechnicianActivity, PowerPlantManagerActivity::class.java))
-        }
+
 
     }
 }

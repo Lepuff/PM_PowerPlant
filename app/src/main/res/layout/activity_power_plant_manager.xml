@@ -1,20 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/colorGrey"
+    android:orientation="vertical"
     tools:context=".PowerPlantManagerActivity">
 
 
+    <Button
+        android:id="@+id/nuclear_user_button"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="30dp"
+        android:layout_width="340dp"
+        android:layout_height="130dp"
+        android:background="@color/colorWhite"
+        android:textColor="@color/colorBlueGrey"
+        android:textSize="20sp"
+        android:text="Nuclear User">
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/technician_recyclerListView"
-        android:scrollbars="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        />
+    </Button>
 
 
 
-</RelativeLayout>
+</LinearLayout>

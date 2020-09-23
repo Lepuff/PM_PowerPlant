@@ -11,4 +11,7 @@
     <string name="unit">Unit</string>
     <string name="radiation_time_limit">Radiation time limit:</string>
     <string name="name">Name</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

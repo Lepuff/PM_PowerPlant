@@ -26,11 +26,6 @@ class TimeStampAdapter(var context: Context, var arrayList: ArrayList<TimeStamp>
         override fun onBindViewHolder(holder: ItemHolder, position: Int) {
             val item:TimeStamp = arrayList[position]
             holder.bind(item)
-
-            holder.itemView.setOnClickListener {
-
-            }
-
         }
 
         class ItemHolder(inflater: LayoutInflater, parent: ViewGroup):

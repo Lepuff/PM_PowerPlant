@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.application.Model.TimeStamp
 import com.example.application.adapters.TimeStampAdapter
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.*
 
 class TimeStampActivity : AppCompatActivity() {
@@ -33,7 +34,18 @@ class TimeStampActivity : AppCompatActivity() {
 
     private fun getTimeStamps() {
 
-        val workRef: CollectionReference = FirebaseFirestore.getInstance().collection("Work").document("0ePZuN5WcxQ3hZXt43JI0rvbzL63").collection("Date")
+        
+
+        val userId: String = if (FirebaseAuth.getInstance().currentUser != null) {
+            "0ePZuN5WcxQ3hZXt43JI0rvbzL63"
+        }else {
+            intent.getStringExtra("userId")!!
+
+        }
+
+        //val userId = "0ePZuN5WcxQ3hZXt43JI0rvbzL63"
+
+        val workRef: CollectionReference = FirebaseFirestore.getInstance().collection("Work").document(userId).collection("Date")
 
         workRef.get()
             .addOnCompleteListener {task ->
@@ -50,6 +62,7 @@ class TimeStampActivity : AppCompatActivity() {
                         for (document in task.result!!) {
                             timeStamp.add(TimeStamp(document.getTimestamp("clock_In")!!.toDate(),document.getTimestamp("clock_Out")!!.toDate(), document.getDouble("hours"), document.getDouble("radiation_Exposed") ))
                         }
+
                         val adapter = TimeStampAdapter(applicationContext, timeStamp)
                         recyclerView.adapter = adapter
                     }

@@ -152,18 +152,6 @@
 
     </Button>
 
-    <Button
-        android:id="@+id/nuclear_button"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="30dp"
-        android:layout_width="340dp"
-        android:layout_height="130dp"
-        android:background="@color/colorWhite"
-        android:textColor="@color/colorBlueGrey"
-        android:textSize="20sp"
-        android:text="Power plant">
-
-    </Button>
 
 
 
