@@ -8,75 +8,82 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import android.widget.ArrayAdapter
-import android.widget.ListView
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
+import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var listView: ListView
-    private lateinit var btName: TextView
-
-    private var bluetoothAdapter: BluetoothAdapter? = null
-    private lateinit var pairedDevices: Set<BluetoothDevice>
-    val REQUEST_ENABLE_BLUETOOTH = 1
-
+    private var m_bluetoothAdapter: BluetoothAdapter? = null
+    private lateinit var m_pairedDevices: Set<BluetoothDevice>
+    private val REQUEST_ENABLE_BLUETOOTH = 1
 
     companion object {
-        val EXTRA_ADDRESS: String = "Devices Adress"
+        val EXTRA_ADDRESS: String = "Device_address"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        listView = findViewById(R.id.listView)
-        btName = findViewById(R.id.bluetooth)
-        bluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
-
-        if (bluetoothAdapter == null) {
-            Toast.makeText(this, "Funkar inte", Toast.LENGTH_SHORT).show()
+        m_bluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
+        if(m_bluetoothAdapter == null) {
+            var t =Toast.makeText(this,"this device doesn't support bluetooth",Toast.LENGTH_LONG)
+            t.show()
+            return
         }
-
-        if (bluetoothAdapter!!.isEnabled) {
+        if(!m_bluetoothAdapter!!.isEnabled) {
             val enableBluetoothIntent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
             startActivityForResult(enableBluetoothIntent, REQUEST_ENABLE_BLUETOOTH)
         }
 
-        pairedDevicesList()
+        select_device_refresh.setOnClickListener{ pairedDeviceList() }
 
     }
 
-    private fun pairedDevicesList() {
-        pairedDevices = bluetoothAdapter!!.bondedDevices
+    private fun pairedDeviceList() {
+        m_pairedDevices = m_bluetoothAdapter!!.bondedDevices
         val list : ArrayList<BluetoothDevice> = ArrayList()
 
-        if(pairedDevices.isEmpty()) {
-            for (device: BluetoothDevice in pairedDevices) {
+        if (!m_pairedDevices.isEmpty()) {
+            for (device: BluetoothDevice in m_pairedDevices) {
                 list.add(device)
-                Log.d("Test", ""+device)
+                Log.i("device", ""+device)
             }
         } else {
-            Toast.makeText(this, "hittade inga", Toast.LENGTH_SHORT).show()
+
+            val t =Toast.makeText(this,"no paired bluetooth devices found",Toast.LENGTH_LONG)
+            t.show()
         }
 
         val adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, list)
-        listView.adapter = adapter
+        select_device_list.adapter = adapter
+        select_device_list.onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
+            val device: BluetoothDevice = list[position]
+            val address: String = device.address
+
+            val intent = Intent(this, ControlActivity::class.java)
+            intent.putExtra(EXTRA_ADDRESS, address)
+            startActivity(intent)
+        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-
         if (requestCode == REQUEST_ENABLE_BLUETOOTH) {
             if (resultCode == Activity.RESULT_OK) {
-                if (bluetoothAdapter!!.isEnabled) {
-                    Toast.makeText(this, "enable bluetooth", Toast.LENGTH_SHORT).show()
+                if (m_bluetoothAdapter!!.isEnabled) {
+
+                    val t =Toast.makeText(this,"Bluetooth has been enabled",Toast.LENGTH_LONG)
+                    t.show()
                 } else {
-                    Toast.makeText(this, "disable bluetooth", Toast.LENGTH_SHORT).show()
+                    val t =Toast.makeText(this,"Bluetooth has been disabled",Toast.LENGTH_LONG)
+                    t.show()
+
                 }
-            } else if(resultCode == Activity.RESULT_CANCELED) {
-                Toast.makeText(this, "bluetooth enable have been canceled", Toast.LENGTH_SHORT).show()
+            } else if (resultCode == Activity.RESULT_CANCELED) {
+                val t =Toast.makeText(this,"Bluetooth enabling has been canceled",Toast.LENGTH_LONG)
+                t.show()
+
             }
         }
     }
