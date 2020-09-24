@@ -215,7 +215,7 @@ class NuclearTechnicianActivity : AppCompatActivity() {
 
             val contentView = RemoteViews(packageName,R.layout.activity_notification)
             contentView.setTextViewText(R.id.tv_title,"Alert")
-            contentView.setTextViewText(R.id.tv_content,"You SUCK MY PEPE" )
+            contentView.setTextViewText(R.id.tv_content,"You have been warned!" )
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 notificationChannel = NotificationChannel(channelId,description,NotificationManager.IMPORTANCE_HIGH)
