@@ -34,7 +34,7 @@ class NuclearTechnicianActivity : AppCompatActivity() {
 
 
     var db = FirebaseFirestore.getInstance()
-
+    //private var contentView = RemoteViews(packageName,R.layout.activity_notification)
     var safteyLimit = 500000.0
 
     private var rcBreakRoom = 0.1
@@ -160,6 +160,24 @@ class NuclearTechnicianActivity : AppCompatActivity() {
                 if (timeRemaining == "01 day: 22 hour: 17 min: 40 sec"){
                     notification()
                 }
+                if (timeRemaining == "01 day: 22 hour: 17 min: 20 sec"){
+                    notification()
+                }
+                if (timeRemaining == "00 day: 01 hour: 00 min: 00 sec"){
+                    notification()
+                }
+                if (timeRemaining == "00 day: 00 hour: 30 min: 00 sec"){
+                    notification()
+                }
+                if (timeRemaining == "00 day: 00 hour: 10 min: 00 sec"){
+                    notification()
+                }
+                if (timeRemaining == "00 day: 00 hour: 05 min: 00 sec"){
+                    notification()
+                }
+                if (timeRemaining == "00 day: 00 hour: 01 min: 00 sec"){
+                    notification()
+                }
 
                 timeRemaining = timeString(untilFinished)
                 txt_radiation_time.text = timeRemaining
@@ -174,11 +192,10 @@ class NuclearTechnicianActivity : AppCompatActivity() {
                 val builder = AlertDialog.Builder(this@NuclearTechnicianActivity)
                 builder.setTitle("WARNING")
                 builder.setMessage("GET OUT NOW")
-                //setBackgroundColor(Color.RED)
                 builder.setNeutralButton("Ok", {dialog, which -> })
                 val dialog: AlertDialog = builder.create()
                 dialog.show()
-                // button_start.isEnabled = true
+
             }
         }
 
@@ -208,14 +225,17 @@ class NuclearTechnicianActivity : AppCompatActivity() {
         )
     }
 
+
+
     private fun notification(){
 
             val intent = Intent(this,NuclearTechnicianActivity::class.java)
             val pendingIntent = PendingIntent.getActivity(this,0,intent,PendingIntent.FLAG_UPDATE_CURRENT)
 
             val contentView = RemoteViews(packageName,R.layout.activity_notification)
+
             contentView.setTextViewText(R.id.tv_title,"Alert")
-            contentView.setTextViewText(R.id.tv_content,"You have been warned!" )
+            contentView.setTextViewText(R.id.tv_content,"You have " + timeRemaining + "  left")
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 notificationChannel = NotificationChannel(channelId,description,NotificationManager.IMPORTANCE_HIGH)
