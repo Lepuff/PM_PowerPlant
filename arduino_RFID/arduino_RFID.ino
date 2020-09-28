@@ -52,47 +52,7 @@ void loop() {
 
   lcd.clear();
   lcd.print(" Scan Your Card ");
-  // read the pushbutton input pin:
-  /*buttonState = digitalRead(buttonPin);
-
-    if (buttonState = HIGH && previous == LOW && millis() - time > debounce){
-    if (buttonState == HIGH){
-
-    }
-    lcd.clear();
-    lcd.print(" Yo");
-    }
-    if (buttonState == LOW){
-    lcd.clear();
-    lcd.print(" Waddup");
-    }*/
-
-  /*if (buttonState == LOW) {
-    lcd.clear();
-    lcd.print("Room: ");
-    lcd.print(roomNumber);
-    lcd.setCursor(0, 1);
-    lcd.print("Radiation Level: ");
-    lcd.print(radiationLevel);
-    }
-
-    if (buttonState == HIGH) {
-    lcd.clear();
-    lcd.print(" Scan Your Card ");
-    while (getID()) {
-      lcd.clear();
-      lcd.setCursor(0, 0);
-      if (loginStatus) {
-        lcd.print(" Logged In ");
-        BTserial.print(!loginStatus);
-      }
-      else {
-        lcd.print(" Logged out");
-        BTserial.print(!loginStatus);
-      }
-      delay (1000);
-    }
-    }*/
+  //firstChar = BTserial.readString().charAt(0);
 
   //Wait until new tag is available
   while (getID()) {
@@ -105,6 +65,35 @@ void loop() {
   }
 
   if (BTserial.available()) {
+    lcd.clear();
+    lcd.setCursor(0, 0);
+    firstChar = BTserial.readString().charAt(0);
+    switch (firstChar) {
+      case LOGGEDOUT: //user not logged in -> login user
+        lcd.print(" Logged in");
+        Serial.println(BTserial.readString().charAt(0)); //for debugging
+        delay(1000);
+        break;
+
+      case LOGGEDIN: //user logged in -> logout user
+        lcd.print(" Logged out");
+        Serial.println(BTserial.readString().charAt(0)); //for debugging
+        delay(1000);
+        break;
+
+      case WARNING: //check for warning message
+        lcd.print("WARNING");
+        lcd.setCursor(0, 1);
+        lcd.print("LIMIT REACHED");
+        delay(1000);
+        break;
+
+      default:
+        break;
+    }
+  }
+
+  /*if (BTserial.available()) {
     lcd.clear();
     lcd.setCursor(0, 0);
     firstChar = BTserial.readString().charAt(0);
@@ -123,7 +112,7 @@ void loop() {
       lcd.print("LIMIT REACHED");
     }
     delay(1000);
-  }
+    }*/
 
 }
 
