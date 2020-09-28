@@ -6,6 +6,9 @@
 const int RST_PIN = 9;
 const int SS_PIN = 10;
 const int  buttonPin = 1;
+const char LOGGEDOUT = '0';
+const char LOGGEDIN = '1';
+const char WARNING = '2';
 
 int buttonState;         // current state of the button
 int lastButtonState = 0;     // previous state of the button
@@ -46,20 +49,23 @@ void setup() {
 }
 
 void loop() {
+
+  lcd.clear();
+  lcd.print(" Scan Your Card ");
   // read the pushbutton input pin:
   /*buttonState = digitalRead(buttonPin);
 
-  if (buttonState = HIGH && previous == LOW && millis() - time > debounce){
+    if (buttonState = HIGH && previous == LOW && millis() - time > debounce){
     if (buttonState == HIGH){
-    
+
     }
     lcd.clear();
     lcd.print(" Yo");
-  }
-  if (buttonState == LOW){
+    }
+    if (buttonState == LOW){
     lcd.clear();
     lcd.print(" Waddup");
-  }*/
+    }*/
 
   /*if (buttonState == LOW) {
     lcd.clear();
@@ -68,9 +74,9 @@ void loop() {
     lcd.setCursor(0, 1);
     lcd.print("Radiation Level: ");
     lcd.print(radiationLevel);
-  }
+    }
 
-  if (buttonState == HIGH) {
+    if (buttonState == HIGH) {
     lcd.clear();
     lcd.print(" Scan Your Card ");
     while (getID()) {
@@ -86,46 +92,38 @@ void loop() {
       }
       delay (1000);
     }
-  }*/
+    }*/
 
   //Wait until new tag is available
   while (getID()) {
     lcd.clear();
     lcd.setCursor(0, 0);
 
-    /*lcd.print("ID : ");
-    lcd.setCursor(0, 1);
-    lcd.print(tagID);*/
     BTserial.print(tagID);
     Serial.print(tagID);
     BTserial.read();
-    delay (1000);
-    }
+  }
+
+  if (BTserial.available()) {
     lcd.clear();
-    lcd.print(" Scan Your Card ");
+    lcd.setCursor(0, 0);
+    firstChar = BTserial.readString().charAt(0);
 
-    /*if (BTserial.available()) {
-    Serial.println(BTserial.readString());
+    if (firstChar == LOGGEDOUT) { //user not logged in -> login user
+      lcd.print(" Logged in");
+      Serial.println(BTserial.readString().charAt(0));
     }
-    if (Serial.available()) {
-    BTserial.println(Serial.readString());
-    }*/
-
-    if (BTserial.available()){
-      lcd.clear();
-      firstChar = BTserial.readString().charAt(0);
-      
-      if (firstChar == '0'){
-        lcd.print(" Logged in");
-        Serial.println(BTserial.readString().charAt(0));
-      }
-      if (firstChar == '1'){
-        lcd.print(" Logged out");
-        Serial.println(BTserial.readString().charAt(0));
-      }
-      delay(1000);
-      //lcd.print(BTserial.readString().charAt(0)); //reads the char at position 0
+    if (firstChar == LOGGEDIN) { //user logged in -> logout user
+      lcd.print(" Logged out");
+      Serial.println(BTserial.readString().charAt(0));
     }
+    if (firstChar == WARNING){
+      lcd.print("WARNING");
+      lcd.setCursor(0, 1);
+      lcd.print("LIMIT REACHED");
+    }
+    delay(1000);
+  }
 
 }
 
@@ -146,11 +144,7 @@ boolean getID()
     //BTserial.print(readCard[i], HEX);
     tagID.concat(String(mfrc522.uid.uidByte[i], HEX)); // Adds the 4 bytes in a single String variable
   }
-  //tagID = readCard;
-  //Serial.println();
-  //BTserial.println();
   tagID.toUpperCase();
-  //BTserial.print(tagID);
   mfrc522.PICC_HaltA(); // Stop reading
   return true;
 }
