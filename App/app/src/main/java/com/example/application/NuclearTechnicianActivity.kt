@@ -16,7 +16,6 @@ import android.util.Log
 import android.widget.RemoteViews
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import kotlinx.android.synthetic.main.activity_main.*
 import android.bluetooth.BluetoothDevice
 import android.os.AsyncTask
 import java.io.IOException
@@ -26,7 +25,6 @@ import java.util.*
 import java.util.concurrent.TimeUnit
 
 import android.app.ProgressDialog
-import android.opengl.Visibility
 import android.view.View
 
 
@@ -74,7 +72,7 @@ class NuclearTechnicianActivity : AppCompatActivity() {
         lateinit var m_bluetoothAdapter: BluetoothAdapter
         var m_isConnected: Boolean = false
         lateinit var m_address: String
-        var BTmessenger : BluetoothMessageThread? = null
+        var BT_messenger : BluetoothMessageThread? = null
     }
 
 
@@ -83,15 +81,14 @@ class NuclearTechnicianActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_nuclear_technician)
         m_address = intent.getStringExtra(SelectDeviceActivity.EXTRA_ADDRESS)
-
         ConnectToDevice(this).execute()
 
 
 
 
         startListeningButton.setOnClickListener {
-            BTmessenger = BluetoothMessageThread(m_bluetoothSocket!!)
-            BTmessenger!!.start()
+            BT_messenger = BluetoothMessageThread(m_bluetoothSocket!!)
+            BT_messenger!!.start()
             startListeningButton.visibility = View.GONE
         }
 
@@ -335,13 +332,16 @@ class NuclearTechnicianActivity : AppCompatActivity() {
     }
     public inner class BluetoothMessageThread(bluetoothSocket: BluetoothSocket) : Thread(){
 
+        val MESSAGE_ID = '1'
+        val MESSAGE_RADIATION = '2'
+
         private val mmInStream: InputStream = m_bluetoothSocket?.inputStream!!
         private val mmOutStream: OutputStream = m_bluetoothSocket?.outputStream!!
         private var mmBuffer: ByteArray = ByteArray(1024) // mmBuffer store for the stream
         private val TAG = "BluetoothThread"
         override fun run() {
             var numBytes: Int
-            var tmp_msg = ""
+            var message = ""
 
             while (true) {
 
@@ -351,17 +351,33 @@ class NuclearTechnicianActivity : AppCompatActivity() {
                     numBytes = mmInStream.read(mmBuffer)
                     val readMessage = String(mmBuffer, 0, numBytes)
                     if (readMessage.contains(".")) {
-                        tmp_msg += readMessage
-                        val string = tmp_msg.toString()
+                        message += readMessage
 
-                        tmp_msg = ""
-                        // Call function to handle login to DB
+                        message = message.trim('.')
 
-                        Log.i("bytes", numBytes.toString())
-                        Log.i("buffer", string)
+                        when(message[0]){
+                            MESSAGE_ID -> {
+                                Log.i(TAG, "Message type : ID")
+                                var id = message.substring(1,message.length)
 
+                                Log.i(TAG, "ID: "+id)
+                                //TODO handle the id log in/out event
+
+                            }
+                            MESSAGE_RADIATION -> {
+                                //TODO handle the radiation change
+                                Log.i(TAG, "Message type : Radiation")
+                                var radation = message.substring(1,message.length)
+                                Log.i(TAG, "Radiation: "+radation)
+                            }
+                        }
+
+                        Log.d("num of bytes:", numBytes.toString())
+                        Log.d("buffer:", mmBuffer.toString())
+
+                        message = ""
                     } else {
-                        tmp_msg += readMessage
+                        message += readMessage
                     }
                 } catch (e: IOException) {
                     Log.e(TAG, "disconnected", e);
@@ -369,7 +385,6 @@ class NuclearTechnicianActivity : AppCompatActivity() {
                 }
             }
         }
-
 
         fun write(bytes: ByteArray) {
             try {
@@ -390,9 +405,16 @@ class NuclearTechnicianActivity : AppCompatActivity() {
         }
     }
 
+
+
     private fun sendCommand(input: String) {
-        if (m_bluetoothSocket != null) {
-            m_bluetoothSocket!!.outputStream.write(input.toByteArray())
+        val TAG = "BT_sendCommand"
+        try {
+            if (m_bluetoothSocket != null) {
+                m_bluetoothSocket!!.outputStream.write(input.toByteArray())
+            }
+        }catch (e: IOException) {
+            Log.e(TAG, "Could not close the connect socket", e)
         }
     }
 
