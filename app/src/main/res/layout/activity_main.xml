@@ -8,8 +8,28 @@
     tools:context=".MainActivity">
 
 
+
+    <TextView
+        android:layout_width="340dp"
+        android:layout_height="60dp"
+        android:gravity="center_vertical"
+        android:textAlignment="center"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="80dp"
+        android:background="@color/colorWhite"
+        android:text="CHECK IN"
+        android:textSize="20sp"/>
+
     <Button
-        android:id="@+id/layout_nuclear_technician_button"
+        android:id="@+id/startListeningButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="start listening"/>
+
+
+    <Button
+        android:id="@+id/nuclear_technician_button"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="80dp"
         android:layout_width="340dp"
@@ -17,12 +37,13 @@
         android:background="@color/colorWhite"
         android:textColor="@color/colorBlueGrey"
         android:textSize="20sp"
+        android:visibility="gone"
         android:text="Nuclear Technician">
 
     </Button>
 
     <Button
-        android:id="@+id/layout_power_plant_button"
+        android:id="@+id/power_plant_button"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="30dp"
         android:layout_width="340dp"
@@ -30,6 +51,7 @@
         android:background="@color/colorWhite"
         android:textColor="@color/colorBlueGrey"
         android:textSize="20sp"
+        android:visibility="gone"
         android:text="Power plant">
 
     </Button>

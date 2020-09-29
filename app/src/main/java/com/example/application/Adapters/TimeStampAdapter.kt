@@ -1,4 +1,4 @@
-package com.example.application.adapters
+package com.example.application.Adapters
 
 import android.content.Context
 import android.view.LayoutInflater
@@ -7,8 +7,6 @@ import android.widget.TextView
 import com.example.application.Model.TimeStamp
 import com.example.application.R
 import androidx.recyclerview.widget.RecyclerView
-import java.text.SimpleDateFormat
-import java.util.*
 import kotlin.collections.ArrayList
 
 

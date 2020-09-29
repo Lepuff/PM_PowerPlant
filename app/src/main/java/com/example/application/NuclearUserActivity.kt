@@ -6,7 +6,7 @@ import android.view.View
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.application.Model.NuclearTechnician
-import com.example.application.adapters.NuclearTechnicianAdapter
+import com.example.application.Adapters.NuclearTechnicianAdapter
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.QuerySnapshot
