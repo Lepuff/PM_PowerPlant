@@ -5,7 +5,6 @@
 
 const int RST_PIN = 9;
 const int SS_PIN = 10;
-const int  buttonPin = 1;
 const char LOGGEDOUT = '0';
 const char LOGGEDIN = '1';
 const char WARNING = '2';
@@ -14,11 +13,8 @@ char firstChar;
 //#define RST_PIN 9
 //#define SS_PIN 10
 
-
 SoftwareSerial BTserial(A4, A3); //RX | TX
-byte readCard[4];
-//String masterTag = "565EE2F7";
-String tagID = "";
+String tagID = ""; // our tag "565EE2F7"
 bool loggedIn;
 
 MFRC522 mfrc522(SS_PIN, RST_PIN);
@@ -45,7 +41,6 @@ void loop() {
   while (getID()) {
     BTserial.print(tagID);
     Serial.print(tagID);
-    //BTserial.read();
   }
 
   if (BTserial.available()) {
@@ -91,9 +86,6 @@ boolean getID()
   }
   tagID = "1";
   for ( uint8_t i = 0; i < 4; i++) { // The MIFARE PICCs that we use have 4 byte UID
-    //readCard[i] = mfrc522.uid.uidByte[i];
-    //Serial.print(readCard[i], HEX);
-    //BTserial.print(readCard[i], HEX);
     tagID.concat(String(mfrc522.uid.uidByte[i], HEX)); // Adds the 4 bytes in a single String variable
   }
   tagID.toUpperCase();
