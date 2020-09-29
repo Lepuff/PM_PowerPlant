@@ -10,8 +10,10 @@ const char LOGGEDIN = '1';
 const char WARNING = '2';
 
 char firstChar;
-//#define RST_PIN 9
-//#define SS_PIN 10
+int potentioPin = A0;
+int potentioVal = 0;
+int potentioVal2 = 0;
+unsigned long timer = 0;
 
 SoftwareSerial BTserial(A4, A3); //RX | TX
 String tagID = ""; // our tag "565EE2F7"
@@ -23,19 +25,40 @@ LiquidCrystal lcd(7, 6, 5, 4, 3, 2); //Parameters: (rs, enable, d4, d5, d6, d7)
 void setup() {
   SPI.begin(); //SPI bus
   mfrc522.PCD_Init(); //MFRC522 (RFID)
+  pinMode(A0, INPUT);
 
   lcd.begin(16, 2); //LCD screen
   lcd.clear();
   lcd.setCursor(0, 0);
   lcd.print(" Scan Your Card ");
 
+  timer = millis();
+  potentioVal = map(analogRead(potentioPin), 0, 1023, 0, 100);
+  potentioVal2 = potentioVal;
   Serial.begin(9600);
   BTserial.begin(9600);
 }
 
 void loop() {
+
+  if (millis() >= timer + 100) {
+    potentioVal = map(analogRead(potentioPin), 0, 1023, 0, 100);
+    if (potentioVal > potentioVal2 + 2 || potentioVal < potentioVal2 - 2) {
+      String message = "2";
+      message.concat(potentioVal);
+      message.concat(".");
+      BTserial.print(message);
+      Serial.println(message);
+      potentioVal2 = potentioVal;
+    }
+    timer = millis();
+  }
+  
   lcd.clear();
-  lcd.print(" Scan Your Card ");
+  lcd.print("Scan Your Card ");
+  lcd.setCursor(0, 1);
+  lcd.print("Radiation: ");
+  lcd.print(potentioVal2);
 
   //Wait until new tag is available
   while (getID()) {
@@ -85,7 +108,7 @@ boolean getID()
   if ( ! mfrc522.PICC_ReadCardSerial()) { //Since a PICC placed get Serial and continue
     return false;
   }
-  tagID = "";
+  tagID = "1";
   for ( uint8_t i = 0; i < 4; i++) { // The MIFARE PICCs that we use have 4 byte UID
     tagID.concat(String(mfrc522.uid.uidByte[i], HEX)); // Adds the 4 bytes in a single String variable
   }
