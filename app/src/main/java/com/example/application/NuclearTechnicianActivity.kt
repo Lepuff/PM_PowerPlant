@@ -17,6 +17,7 @@ import android.util.Log
 import android.widget.RemoteViews
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import com.example.application.Common.Common
 import kotlinx.android.synthetic.main.activity_main.*
 
 import java.util.*
@@ -26,37 +27,16 @@ import java.util.concurrent.TimeUnit
 
 class NuclearTechnicianActivity : AppCompatActivity() {
 
-    lateinit var notificationManager : NotificationManager
-    lateinit var notificationChannel : NotificationChannel
-    lateinit var builder : Notification.Builder
+    private lateinit var notificationManager : NotificationManager
+    private lateinit var notificationChannel : NotificationChannel
+    private lateinit var builder : Notification.Builder
     private val channelId = "com.example.application"
     private val description = "Test notification"
 
 
     var db = FirebaseFirestore.getInstance()
     //private var contentView = RemoteViews(packageName,R.layout.activity_notification)
-    var safteyLimit = 500000.0
 
-    private var rcBreakRoom = 0.1
-    private var rcControlRoom = 0.5
-    private var rcReactorRoom = 1.6
-
-    var hazmatSuitOn = ""
-    val pcHazmatSuit = 5.0
-    val pcClothes = 1.0
-
-    var room = ""
-    var rC = 0.0
-    var pC = pcClothes
-
-    val reactorOutput = 30.0
-    var humanExposure = 0.0
-    var timeLeft = 0.0
-    var millisInFuture: Long = 0
-    val countDownInterval: Long = 1000
-    var timeRemaining = ""
-
-    var untilFinished: Long = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
@@ -72,8 +52,8 @@ class NuclearTechnicianActivity : AppCompatActivity() {
             ref.get()
                 .addOnSuccessListener { task ->
                     if (task.exists()) {
-                        room = task.getString("room").toString()
-                        Log.d("Test", room)
+                        Common.room = task.getLong("room")!!.toInt()
+                        Log.d("Test", Common.room.toString())
                     }
 
                 }
@@ -88,7 +68,7 @@ class NuclearTechnicianActivity : AppCompatActivity() {
             ref.get()
                 .addOnSuccessListener { task ->
                     if (task.exists()) {
-                        hazmatSuitOn = task.getString("hazmatSuit").toString()
+                        Common.hazmatSuitOn = task.getBoolean("hazmatSuit")
                     }
                 }
                 .addOnFailureListener { exception ->
@@ -98,28 +78,28 @@ class NuclearTechnicianActivity : AppCompatActivity() {
         }
 
         fun startTimer(){
-            timeLeft = (safteyLimit / (reactorOutput * rC) / pcClothes) * 1000
-            millisInFuture = timeLeft.toLong()
-            timer(millisInFuture, countDownInterval).start()
-            Log.d("Test",timeRemaining)
+            Common.timeLeft = (Common.safteyLimit / (Common.reactorOutput * Common.rC) / Common.pcClothes) * 1000
+            Common.millisInFuture = Common.timeLeft.toLong()
+            timer(Common.millisInFuture, Common.countDownInterval).start()
+            Log.d("Test",Common.timeRemaining)
         }
 
         btn_ts.setOnClickListener {
             getRoom()
             isHazmatSuitOn()
-            if(hazmatSuitOn == "1"){
-                pC = pcHazmatSuit
+            if(Common.hazmatSuitOn == true){
+                Common.pC = Common.pcHazmatSuit
             }
-            if(room == "1"){
-                rC = rcBreakRoom
+            if(Common.room == 1){
+                Common.rC = Common.rcBreakRoom
                 startTimer()
             }
-            if(room == "2"){
-                rC = rcControlRoom
+            if(Common.room == 2){
+                Common.rC = Common.rcControlRoom
                 startTimer()
             }
-            if(room == "3"){
-                rC = rcReactorRoom
+            if(Common.room == 3){
+                Common.rC = Common.rcReactorRoom
                 startTimer()
             }
         }
@@ -137,55 +117,55 @@ class NuclearTechnicianActivity : AppCompatActivity() {
             override fun onTick(millisUntilFinished: Long){
 
                 //Break Room
-                if(room == "1"){
-                    timeLeft = (safteyLimit / (reactorOutput * rC) / pcClothes) *1000
-                    untilFinished = timeLeft.toLong()
+                if(Common.room == 1){
+                    Common.timeLeft = (Common.safteyLimit / (Common.reactorOutput * Common.rC) / Common.pcClothes) *1000
+                    Common.untilFinished = Common.timeLeft.toLong()
                 }
 
                 //Control Room
-                else if(room == "2"){
-                    timeLeft = (safteyLimit / (reactorOutput * rC) / pcClothes)*1000
-                    untilFinished = timeLeft.toLong()
+                else if(Common.room == 2){
+                    Common.timeLeft = (Common.safteyLimit / (Common.reactorOutput * Common.rC) / Common.pcClothes)*1000
+                    Common.untilFinished = Common.timeLeft.toLong()
                 }
 
                 //Reactor Room
-                else if(room == "3"){
-                    timeLeft = (safteyLimit / (reactorOutput * rC) / pcClothes) *1000
-                    untilFinished = timeLeft.toLong()
+                else if(Common.room == 3){
+                    Common.timeLeft = (Common.safteyLimit / (Common.reactorOutput * Common.rC) / Common.pcClothes) *1000
+                    Common.untilFinished = Common.timeLeft.toLong()
                 }
                 else{
                     //outside powerplant
                 }
 
-                if (timeRemaining == "01 day: 22 hour: 17 min: 40 sec"){
+                if (Common.timeRemaining == "01 day: 22 hour: 17 min: 40 sec"){
                     notification()
                 }
-                if (timeRemaining == "01 day: 22 hour: 17 min: 20 sec"){
+                if (Common.timeRemaining == "01 day: 22 hour: 17 min: 20 sec"){
                     notification()
                 }
-                if (timeRemaining == "00 day: 01 hour: 00 min: 00 sec"){
+                if (Common.timeRemaining == "00 day: 01 hour: 00 min: 00 sec"){
                     notification()
                 }
-                if (timeRemaining == "00 day: 00 hour: 30 min: 00 sec"){
+                if (Common.timeRemaining == "00 day: 00 hour: 30 min: 00 sec"){
                     notification()
                 }
-                if (timeRemaining == "00 day: 00 hour: 10 min: 00 sec"){
+                if (Common.timeRemaining == "00 day: 00 hour: 10 min: 00 sec"){
                     notification()
                 }
-                if (timeRemaining == "00 day: 00 hour: 05 min: 00 sec"){
+                if (Common.timeRemaining == "00 day: 00 hour: 05 min: 00 sec"){
                     notification()
                 }
-                if (timeRemaining == "00 day: 00 hour: 01 min: 00 sec"){
+                if (Common.timeRemaining == "00 day: 00 hour: 01 min: 00 sec"){
                     notification()
                 }
 
-                timeRemaining = timeString(untilFinished)
-                txt_radiation_time.text = timeRemaining
-                humanExposure += (reactorOutput * rC) / pcClothes
-                safteyLimit -= (reactorOutput * rC) / pcClothes
-                txt_unit.text = humanExposure.toString()
-                txt_safety_limit.text = safteyLimit.toString()
-                txt_room_number.text = room
+                Common.timeRemaining = timeString(Common.untilFinished)
+                txt_radiation_time.text = Common.timeRemaining
+                Common.humanExposure += (Common.reactorOutput * Common.rC) / Common.pcClothes
+                Common.safteyLimit -= (Common.reactorOutput * Common.rC) / Common.pcClothes
+                txt_unit.text = Common.humanExposure.toString()
+                txt_safety_limit.text = Common.safteyLimit.toString()
+                txt_room_number.text = Common.room.toString()
             }
 
             override fun onFinish() {
@@ -235,7 +215,7 @@ class NuclearTechnicianActivity : AppCompatActivity() {
             val contentView = RemoteViews(packageName,R.layout.activity_notification)
 
             contentView.setTextViewText(R.id.tv_title,"Alert")
-            contentView.setTextViewText(R.id.tv_content,"You have " + timeRemaining + "  left")
+            contentView.setTextViewText(R.id.tv_content,"You have " + Common.timeRemaining + "  left")
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 notificationChannel = NotificationChannel(channelId,description,NotificationManager.IMPORTANCE_HIGH)
@@ -260,6 +240,7 @@ class NuclearTechnicianActivity : AppCompatActivity() {
             notificationManager.notify(1234,builder.build())
 
     }
+
 
 
 }
