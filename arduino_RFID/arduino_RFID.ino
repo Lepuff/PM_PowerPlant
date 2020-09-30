@@ -8,15 +8,20 @@ const int SS_PIN = 10;
 const char LOGGEDOUT = '0';
 const char LOGGEDIN = '1';
 const char WARNING = '2';
+const int RADIATION_CHECK_DELAY = 300;
+const int NOISE_FILTER_VALUE = 3;
+
+const String ID = "1"; //message identifier for sending tag-ID
+const String RADIATION = "2"; //message identifier for sending radiation-level
 
 char firstChar;
 int potentioPin = A0;
 int potentioVal = 0;
-int potentioVal2 = 0;
+int previousVal = 0;
 unsigned long timer = 0;
 
 SoftwareSerial BTserial(A4, A3); //RX | TX
-String tagID = ""; // our tag "565EE2F7"
+String tagID = ""; // our tags "565EE2F7" && "699FC756"
 bool loggedIn;
 
 MFRC522 mfrc522(SS_PIN, RST_PIN);
@@ -30,35 +35,35 @@ void setup() {
   lcd.begin(16, 2); //LCD screen
   lcd.clear();
   lcd.setCursor(0, 0);
-  lcd.print(" Scan Your Card ");
+  lcd.print("Scan Your Card ");
 
   timer = millis();
   potentioVal = map(analogRead(potentioPin), 0, 1023, 0, 100);
-  potentioVal2 = potentioVal;
+  previousVal = potentioVal;
   Serial.begin(9600);
   BTserial.begin(9600);
 }
 
 void loop() {
 
-  if (millis() >= timer + 100) {
+  if (millis() >= timer + RADIATION_CHECK_DELAY) {
     potentioVal = map(analogRead(potentioPin), 0, 1023, 0, 100);
-    if (potentioVal > potentioVal2 + 2 || potentioVal < potentioVal2 - 2) {
-      String message = "2";
+    if (potentioVal > previousVal + NOISE_FILTER_VALUE || potentioVal < previousVal - NOISE_FILTER_VALUE) {
+      String message = RADIATION; // RADIATION == "2" -> identifier for message
       message.concat(potentioVal);
-      message.concat(".");
+      message.concat("."); // "." is used as end of message for android
       BTserial.print(message);
       Serial.println(message);
-      potentioVal2 = potentioVal;
+      previousVal = potentioVal;
     }
     timer = millis();
   }
-  
+
   lcd.clear();
   lcd.print("Scan Your Card ");
   lcd.setCursor(0, 1);
   lcd.print("Radiation: ");
-  lcd.print(potentioVal2);
+  lcd.print(previousVal);
 
   //Wait until new tag is available
   while (getID()) {
@@ -93,6 +98,8 @@ void loop() {
         break;
 
       default:
+        Serial.print("Unknown message in state machine: ");
+        Serial.println(firstChar);
         break;
     }
   }
@@ -102,18 +109,16 @@ void loop() {
 boolean getID()
 {
   // Getting ready for Reading PICCs
-  if ( ! mfrc522.PICC_IsNewCardPresent()) { //If a new PICC placed to RFID reader continue
-    return false;
+  if (mfrc522.PICC_IsNewCardPresent() && mfrc522.PICC_ReadCardSerial()) {
+    tagID = ID; //ID == "1" -> used as identifier for message
+    for ( uint8_t i = 0; i < 4; i++) { // The MIFARE PICCs that we use have 4 byte UID
+      tagID.concat(String(mfrc522.uid.uidByte[i], HEX)); // Adds the 4 bytes in a single String variable
+    }
+    tagID.concat(".");
+    tagID.toUpperCase();
+    mfrc522.PICC_HaltA(); // Stop reading
+    return true;
   }
-  if ( ! mfrc522.PICC_ReadCardSerial()) { //Since a PICC placed get Serial and continue
-    return false;
-  }
-  tagID = "1";
-  for ( uint8_t i = 0; i < 4; i++) { // The MIFARE PICCs that we use have 4 byte UID
-    tagID.concat(String(mfrc522.uid.uidByte[i], HEX)); // Adds the 4 bytes in a single String variable
-  }
-  tagID.concat(".");
-  tagID.toUpperCase();
-  mfrc522.PICC_HaltA(); // Stop reading
-  return true;
+  return false;
+
 }
