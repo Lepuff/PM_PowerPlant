@@ -17,7 +17,7 @@ class Common {
         var rC: Double = 0.0
         var pC = pcClothes
 
-        val reactorOutput: Double = 30.0
+        var reactorOutput: Double = 30.0
         var humanExposure: Double = 0.0
         var timeLeft: Double = 0.0
         var millisInFuture: Long = 0
