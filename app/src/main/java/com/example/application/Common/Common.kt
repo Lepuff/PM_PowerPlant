@@ -26,4 +26,5 @@ class Common {
 
         var untilFinished: Long = 0
     }
+
 }

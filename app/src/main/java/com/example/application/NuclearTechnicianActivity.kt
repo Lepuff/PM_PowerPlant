@@ -44,9 +44,6 @@ class NuclearTechnicianActivity : AppCompatActivity() {
         setContentView(R.layout.activity_nuclear_technician)
 
 
-
-
-
         fun getRoom() {
             val ref = db.collection("/User").document("/0ePZuN5WcxQ3hZXt43JI0rvbzL63")
             ref.get()
@@ -87,28 +84,47 @@ class NuclearTechnicianActivity : AppCompatActivity() {
         btn_ts.setOnClickListener {
             getRoom()
             isHazmatSuitOn()
+
             if(Common.hazmatSuitOn == true){
                 Common.pC = Common.pcHazmatSuit
             }
-            if(Common.room == 1){
-                Common.rC = Common.rcBreakRoom
-                startTimer()
-            }
-            if(Common.room == 2){
-                Common.rC = Common.rcControlRoom
-                startTimer()
-            }
-            if(Common.room == 3){
-                Common.rC = Common.rcReactorRoom
-                startTimer()
+
+            when (Common.room){
+                1 -> { Common.rC = Common.rcBreakRoom
+                    startTimer()}
+                2 -> {Common.rC = Common.rcControlRoom
+                    startTimer()}
+                3 -> {Common.rC = Common.rcReactorRoom
+                    startTimer()}
             }
         }
 
         notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-
-
     }
 
+    private fun whichRoom(){
+        when (Common.room) {
+            1 -> {Common.timeLeft = (Common.safteyLimit / (Common.reactorOutput * Common.rC) / Common.pcClothes) *1000
+                Common.untilFinished = Common.timeLeft.toLong()}
+            2 -> {Common.timeLeft = (Common.safteyLimit / (Common.reactorOutput * Common.rC) / Common.pcClothes)*1000
+                Common.untilFinished = Common.timeLeft.toLong()}
+            3 -> {Common.timeLeft = (Common.safteyLimit / (Common.reactorOutput * Common.rC) / Common.pcClothes) *1000
+                Common.untilFinished = Common.timeLeft.toLong()}
+        }
+    }
+
+    private fun notificationInterval(){
+
+        when (Common.timeRemaining) {
+            "01 day: 22 hour: 17 min: 40 sec" -> notification()
+            "01 day: 22 hour: 17 min: 20 sec" -> notification()
+            "00 day: 01 hour: 00 min: 00 sec" -> notification()
+            "00 day: 00 hour: 30 min: 00 sec" -> notification()
+            "00 day: 00 hour: 10 min: 00 sec" -> notification()
+            "00 day: 00 hour: 05 min: 00 sec" -> notification()
+            "00 day: 00 hour: 01 min: 00 sec" -> notification()
+        }
+    }
 
 
     private fun timer(millisInFuture:Long,countDownInterval:Long):CountDownTimer{
@@ -116,48 +132,8 @@ class NuclearTechnicianActivity : AppCompatActivity() {
 
             override fun onTick(millisUntilFinished: Long){
 
-                //Break Room
-                if(Common.room == 1){
-                    Common.timeLeft = (Common.safteyLimit / (Common.reactorOutput * Common.rC) / Common.pcClothes) *1000
-                    Common.untilFinished = Common.timeLeft.toLong()
-                }
-
-                //Control Room
-                else if(Common.room == 2){
-                    Common.timeLeft = (Common.safteyLimit / (Common.reactorOutput * Common.rC) / Common.pcClothes)*1000
-                    Common.untilFinished = Common.timeLeft.toLong()
-                }
-
-                //Reactor Room
-                else if(Common.room == 3){
-                    Common.timeLeft = (Common.safteyLimit / (Common.reactorOutput * Common.rC) / Common.pcClothes) *1000
-                    Common.untilFinished = Common.timeLeft.toLong()
-                }
-                else{
-                    //outside powerplant
-                }
-
-                if (Common.timeRemaining == "01 day: 22 hour: 17 min: 40 sec"){
-                    notification()
-                }
-                if (Common.timeRemaining == "01 day: 22 hour: 17 min: 20 sec"){
-                    notification()
-                }
-                if (Common.timeRemaining == "00 day: 01 hour: 00 min: 00 sec"){
-                    notification()
-                }
-                if (Common.timeRemaining == "00 day: 00 hour: 30 min: 00 sec"){
-                    notification()
-                }
-                if (Common.timeRemaining == "00 day: 00 hour: 10 min: 00 sec"){
-                    notification()
-                }
-                if (Common.timeRemaining == "00 day: 00 hour: 05 min: 00 sec"){
-                    notification()
-                }
-                if (Common.timeRemaining == "00 day: 00 hour: 01 min: 00 sec"){
-                    notification()
-                }
+                whichRoom()
+                notificationInterval()
 
                 Common.timeRemaining = timeString(Common.untilFinished)
                 txt_radiation_time.text = Common.timeRemaining
@@ -204,8 +180,6 @@ class NuclearTechnicianActivity : AppCompatActivity() {
             days, hours, minutes,seconds
         )
     }
-
-
 
     private fun notification(){
 
