@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.application.Model.TimeStamp
 import com.example.application.Adapters.TimeStampAdapter
+import com.example.application.Data.Common_2
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.*
 
@@ -34,13 +35,11 @@ class TimeStampActivity : AppCompatActivity() {
 
     private fun getTimeStamps() {
 
-        
-
-        val userId: String = if (FirebaseAuth.getInstance().currentUser != null) {
-            "0ePZuN5WcxQ3hZXt43JI0rvbzL63"
-        }else {
+        val userId: String = if(Common_2.currentRole!!) {
             intent.getStringExtra("userId")!!
-
+        }
+        else {
+            Common_2.currentUserId!!
         }
 
         val workRef: CollectionReference = FirebaseFirestore.getInstance().collection("Work").document(userId).collection("Date")

@@ -6,16 +6,16 @@ import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothSocket
 import android.content.Context
 import android.content.Intent
+import android.graphics.Color
 import android.os.AsyncTask
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.Handler
 import android.util.Log
 import android.view.View
+import android.widget.Toast
 import com.example.application.Data.Common_2
-import com.google.firebase.firestore.CollectionReference
-import com.google.firebase.firestore.DocumentReference
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.QuerySnapshot
+import com.google.firebase.firestore.*
 import kotlinx.android.synthetic.main.activity_main.*
 import java.io.IOException
 import java.io.InputStream
@@ -40,15 +40,12 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-
-
         ConnectToDevice(this).execute()
 
-        startListeningButton.setOnClickListener {
+        Handler().postDelayed({
             btMessenger = BluetoothMessageThread(m_bluetoothSocket!!)
             btMessenger!!.start()
-            startListeningButton.visibility = View.GONE
-        }
+        }, 3000)
 
 
         nuclear_technician_button.setOnClickListener {
@@ -63,11 +60,7 @@ class MainActivity : AppCompatActivity() {
 
     private class ConnectToDevice(c: Context) : AsyncTask<Void, Void, String>() {
         private var connectSuccess: Boolean = true
-        private val context: Context
-
-        init {
-            this.context = c
-        }
+        private val context: Context = c
 
         override fun onPreExecute() {
             super.onPreExecute()
@@ -104,7 +97,7 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-    private fun checkInUser(tmpMsg: String) {
+    private fun checkInUser(id: String) {
 
         val searchUserRef: CollectionReference = FirebaseFirestore.getInstance().collection("User")
 
@@ -115,37 +108,43 @@ class MainActivity : AppCompatActivity() {
                     val querySnapshot: QuerySnapshot = task.result!!
 
                     if (querySnapshot.isEmpty) {
-
+                        Toast.makeText(this, getString(R.string.no_users), Toast.LENGTH_SHORT).show()
                     } else {
                         for (document in task.result!!) {
 
-                            if(document.getString("tag_Id") == tmpMsg) {
+                            if(document.getString("tag_Id") == id) {
 
-                                val userRef: DocumentReference = FirebaseFirestore.getInstance().collection("User").document(document.getString("user_Id").toString())
+                                val userRef: DocumentReference = FirebaseFirestore.getInstance().collection("User").document(document.id)
 
                                 userRef.get()
-                                    .addOnSuccessListener { documentSnapshot ->
+                                    .addOnCompleteListener { task ->
+                                        if(task.isSuccessful) {
+                                            val documentSnapshot: DocumentSnapshot = task.result!!
 
-                                        Common_2.currentUserId = documentSnapshot.getString("user_Id")
-                                        Common_2.currentUsername = documentSnapshot.getString("username")
+                                            Common_2.currentUserId = documentSnapshot.getString("user_Id")
+                                            Common_2.currentUsername = documentSnapshot.getString("username")
+                                            Common_2.currentRole = documentSnapshot.getBoolean("manager")
 
-                                        if(documentSnapshot.getBoolean("clock_In")!!) {
-                                            userRef.update(mapOf(
-                                                "clock_In" to false
+                                            if(documentSnapshot.getBoolean("clock_In")!!) {
+                                                userRef.update(mapOf(
+                                                    "clock_In" to false
 
-                                            ))
+                                                ))
+                                                Common_2.ifCheckIn = false
+                                                updateUI()
+                                                sendCommand("1")
+                                            }
+                                            else {
+                                                userRef.update(mapOf(
+                                                    "clock_In" to true
+
+                                                ))
+                                                Common_2.ifCheckIn = true
+                                                updateUI()
+                                                sendCommand("0")
+                                            }
                                         }
-                                        else {
-                                            userRef.update(mapOf(
-                                                "clock_In" to true
-
-                                            ))
-                                        }
-                                    }.addOnCompleteListener {
-                                        // UPDATE UI
-                                       updateUI()
                                     }
-
 
                             }
                         }
@@ -156,13 +155,43 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun updateUI() {
-        nuclear_technician_button.visibility = View.VISIBLE
-        power_plant_button.visibility = View.VISIBLE
+        if(Common_2.ifCheckIn!!) {
+            checkbox.text = getString(R.string.check_out)
+            checkbox.setTextColor(Color.WHITE)
+            checkbox.setBackgroundColor(Color.RED)
+            if(Common_2.currentRole!!) {
+                startActivity(Intent(this@MainActivity, PowerPlantManagerActivity::class.java))
+                power_plant_button.visibility = View.VISIBLE
+
+            }
+            else {
+                startActivity(Intent(this@MainActivity, NuclearTechnicianActivity::class.java))
+                nuclear_technician_button.visibility = View.VISIBLE
+            }
+        }
+        else {
+            checkbox.text = getString(R.string.check_in)
+            checkbox.setTextColor(Color.BLACK)
+            nuclear_technician_button.visibility = View.GONE
+            power_plant_button.visibility = View.GONE
+            checkbox.setBackgroundColor(Color.WHITE)
+
+            resetCommonData()
+        }
     }
+
+    private fun resetCommonData() {
+        Common_2.currentRole = null
+        Common_2.currentUserId = null
+        Common_2.currentUsername = null
+}
 
 
 
     inner class BluetoothMessageThread(bluetoothSocket: BluetoothSocket) : Thread(){
+
+        private val MESSAGE_ID = '1'
+        private val MESSAGE_RADIATION = '2'
 
         private val mmInStream: InputStream = m_bluetoothSocket?.inputStream!!
         private val mmOutStream: OutputStream = m_bluetoothSocket?.outputStream!!
@@ -170,28 +199,42 @@ class MainActivity : AppCompatActivity() {
         private val TAG = "BluetoothThread"
         override fun run() {
             var numBytes: Int
-            var tmp_msg = ""
+            var message = ""
 
             while (true) {
-
 
                 try {
                     // Read from the InputStream
                     numBytes = mmInStream.read(mmBuffer)
                     val readMessage = String(mmBuffer, 0, numBytes)
                     if (readMessage.contains(".")) {
-                        tmp_msg += readMessage
-                        val string = tmp_msg
-                        // Call function to handle login to DB
+                        message += readMessage
 
-                        checkInUser(tmp_msg)
+                        message = message.trim('.')
 
+                        when(message[0]){
+                            MESSAGE_ID -> {
+                                Log.i(TAG, "Message type : ID")
+                                val id = message.substring(1,message.length)
 
-                        Log.i("bytes", numBytes.toString())
-                        Log.i("buffer", string)
+                                Log.i(TAG, "ID: "+id)
+                                checkInUser(id)
 
+                            }
+                            MESSAGE_RADIATION -> {
+                                //TODO handle the radiation change
+                                Log.i(TAG, "Message type : Radiation")
+                                var radation = message.substring(1,message.length)
+                                Log.i(TAG, "Radiation: "+radation)
+                            }
+                        }
+
+                        Log.d("num of bytes:", numBytes.toString())
+                        Log.d("buffer:", mmBuffer.toString())
+
+                        message = ""
                     } else {
-                        tmp_msg += readMessage
+                        message += readMessage
                     }
                 } catch (e: IOException) {
                     Log.e(TAG, "disconnected", e);
@@ -199,7 +242,6 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
-
 
         fun write(bytes: ByteArray) {
             try {
@@ -221,11 +263,16 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun sendCommand(input: String) {
-        if (m_bluetoothSocket != null) {
-            m_bluetoothSocket!!.outputStream.write(input.toByteArray())
+        val TAG = "BT_sendCommand"
+        try {
+            if (m_bluetoothSocket != null) {
+                m_bluetoothSocket!!.outputStream.write(input.toByteArray())
+            }
+        }catch (e: IOException) {
+            Log.e(TAG, "Could not close the connect socket", e)
         }
     }
-    /*
+
     private fun disconnect() {
         if (m_bluetoothSocket != null) {
             try {
@@ -238,7 +285,6 @@ class MainActivity : AppCompatActivity() {
             }
         }
         finish()
-    }*/
-
+    }
 
 }

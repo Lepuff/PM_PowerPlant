@@ -14,4 +14,7 @@
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="check_in">CHECK IN</string>
+    <string name="check_out">CHECK OUT</string>
+    <string name="no_users">No users</string>
 </resources>
