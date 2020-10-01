@@ -14,8 +14,8 @@ import android.os.Handler
 import android.util.Log
 import android.view.View
 import android.widget.Toast
-import com.example.application.Common.Common
-import com.example.application.Data.Common_2
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import com.example.application.Data.Common
 import com.google.firebase.firestore.*
 import kotlinx.android.synthetic.main.activity_main.*
 import java.io.IOException
@@ -36,6 +36,7 @@ class MainActivity : AppCompatActivity() {
         var btMessenger : BluetoothMessageThread? = null
     }
 
+    private val nuclearTechnicianActivity = NuclearTechnicianActivity()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -122,16 +123,18 @@ class MainActivity : AppCompatActivity() {
                                         if(task.isSuccessful) {
                                             val documentSnapshot: DocumentSnapshot = task.result!!
 
-                                            Common_2.currentUserId = documentSnapshot.getString("user_Id")
-                                            Common_2.currentUsername = documentSnapshot.getString("username")
-                                            Common_2.currentRole = documentSnapshot.getBoolean("manager")
+                                            Common.currentUserId = documentSnapshot.getString("user_Id")
+                                            Common.currentUsername = documentSnapshot.getString("username")
+                                            Common.currentRole = documentSnapshot.getBoolean("manager")
+                                            Common.room = documentSnapshot.getLong("room")!!.toInt()
+                                            Common.hazmatSuitOn = documentSnapshot.getBoolean("hazmatSuit")
 
                                             if(documentSnapshot.getBoolean("clock_In")!!) {
                                                 userRef.update(mapOf(
                                                     "clock_In" to false
 
                                                 ))
-                                                Common_2.ifCheckIn = false
+                                                Common.ifCheckIn = false
                                                 updateUI()
                                                 sendCommand("1")
                                             }
@@ -140,7 +143,7 @@ class MainActivity : AppCompatActivity() {
                                                     "clock_In" to true
 
                                                 ))
-                                                Common_2.ifCheckIn = true
+                                                Common.ifCheckIn = true
                                                 updateUI()
                                                 sendCommand("0")
                                             }
@@ -156,11 +159,11 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun updateUI() {
-        if(Common_2.ifCheckIn!!) {
+        if(Common.ifCheckIn!!) {
             checkbox.text = getString(R.string.check_out)
             checkbox.setTextColor(Color.WHITE)
             checkbox.setBackgroundColor(Color.RED)
-            if(Common_2.currentRole!!) {
+            if(Common.currentRole!!) {
                 startActivity(Intent(this@MainActivity, PowerPlantManagerActivity::class.java))
                 power_plant_button.visibility = View.VISIBLE
 
@@ -182,12 +185,14 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun resetCommonData() {
-        Common_2.currentRole = null
-        Common_2.currentUserId = null
-        Common_2.currentUsername = null
+        Common.currentRole = null
+        Common.currentUserId = null
+        Common.currentUsername = null
+        Common.room = null
+        Common.hazmatSuitOn = null
+
+        nuclearTechnicianActivity.timer(Common.millisInFuture, Common.countDownInterval)
 }
-
-
 
     inner class BluetoothMessageThread(bluetoothSocket: BluetoothSocket) : Thread(){
 

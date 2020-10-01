@@ -1,20 +1,24 @@
-
-package com.example.application.Common
+package com.example.application.Data
 
 class Common {
 
-    companion object{
+
+    companion object {
+        var currentUserId: String? = null
+        var currentUsername: String? = null
+        var currentRole: Boolean? = null
+        var ifCheckIn: Boolean? = null
+        var room: Int? = null
+        var hazmatSuitOn: Boolean? = null
 
         var safteyLimit: Double = 500000.0
         val rcBreakRoom: Double = 0.1
         val rcControlRoom: Double = 0.5
         val rcReactorRoom: Double = 1.6
 
-        var hazmatSuitOn: Boolean? = null
         val pcHazmatSuit: Double = 5.0
         val pcClothes: Double = 1.0
 
-        var room: Int? = null
         var rC: Double = 0.0
         var pC = pcClothes
 
@@ -26,6 +30,8 @@ class Common {
         var timeRemaining: String = ""
 
         var untilFinished: Long = 0
+
     }
+
 
 }

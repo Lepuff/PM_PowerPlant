@@ -1,5 +1,6 @@
 package com.example.application
 import android.app.*
+import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.graphics.BitmapFactory
@@ -16,9 +17,8 @@ import androidx.appcompat.app.AppCompatActivity
 
 import java.util.*
 import java.util.concurrent.TimeUnit
-
-
-import com.example.application.Common.Common
+import com.example.application.Data.Common
+import kotlin.String
 
 
 class NuclearTechnicianActivity : AppCompatActivity() {
@@ -30,73 +30,38 @@ class NuclearTechnicianActivity : AppCompatActivity() {
     private val description = "Test notification"
 
 
-    var db = FirebaseFirestore.getInstance()
-    //private var contentView = RemoteViews(packageName,R.layout.activity_notification)
-
-
     override fun onCreate(savedInstanceState: Bundle?) {
 
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_nuclear_technician)
-
-
-        fun getRoom() {
-            val ref = db.collection("/User").document("/0ePZuN5WcxQ3hZXt43JI0rvbzL63")
-            ref.get()
-                .addOnSuccessListener { task ->
-                    if (task.exists()) {
-                        Common.room = task.getLong("room")!!.toInt()
-                        Log.d("Test", Common.room.toString())
-                    }
-
-                }
-                .addOnFailureListener { exception ->
-                    Log.d("Test", "get failed with ", exception)
-                }
-
+        if(Common.hazmatSuitOn == true){
+            Common.pC = Common.pcHazmatSuit
         }
 
-        fun isHazmatSuitOn() {
-            val ref = db.collection("/User").document("/0ePZuN5WcxQ3hZXt43JI0rvbzL63")
-            ref.get()
-                .addOnSuccessListener { task ->
-                    if (task.exists()) {
-                        Common.hazmatSuitOn = task.getBoolean("hazmatSuit")
-                    }
-                }
-                .addOnFailureListener { exception ->
-                    Log.d("Test", "get failed with ", exception)
-                }
-
-        }
-
-        fun startTimer(){
-            Common.timeLeft = (Common.safteyLimit / (Common.reactorOutput * Common.rC) / Common.pcClothes) * 1000
-            Common.millisInFuture = Common.timeLeft.toLong()
-            timer(Common.millisInFuture, Common.countDownInterval).start()
-            Log.d("Test",Common.timeRemaining)
-        }
-
-        timeStamp_button.setOnClickListener {
-            getRoom()
-            isHazmatSuitOn()
-
-            if(Common.hazmatSuitOn == true){
-                Common.pC = Common.pcHazmatSuit
-            }
-
-            when (Common.room){
-                1 -> { Common.rC = Common.rcBreakRoom
-                    startTimer()}
-                2 -> {Common.rC = Common.rcControlRoom
-                    startTimer()}
-                3 -> {Common.rC = Common.rcReactorRoom
-                    startTimer()}
-            }
+        when (Common.room){
+            1 -> { Common.rC = Common.rcBreakRoom
+                startTimer()}
+            2 -> {Common.rC = Common.rcControlRoom
+                startTimer()}
+            3 -> {Common.rC = Common.rcReactorRoom
+                startTimer()}
         }
 
         notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+
+        timeStamp_button.setOnClickListener {
+            startActivity(Intent(this@NuclearTechnicianActivity, TimeStampActivity::class.java))
+        }
+
     }
+
+    private fun startTimer(){
+        Common.timeLeft = (Common.safteyLimit / (Common.reactorOutput * Common.rC) / Common.pcClothes) * 1000
+        Common.millisInFuture = Common.timeLeft.toLong()
+        timer(Common.millisInFuture, Common.countDownInterval).start()
+        Log.d("Test",Common.timeRemaining)
+    }
+
 
     private fun whichRoom(){
         when (Common.room) {
@@ -123,7 +88,7 @@ class NuclearTechnicianActivity : AppCompatActivity() {
     }
 
 
-    private fun timer(millisInFuture:Long,countDownInterval:Long):CountDownTimer{
+    fun timer(millisInFuture:Long,countDownInterval:Long):CountDownTimer{
         return object: CountDownTimer(millisInFuture,countDownInterval){
 
             override fun onTick(millisUntilFinished: Long){
@@ -135,8 +100,9 @@ class NuclearTechnicianActivity : AppCompatActivity() {
                 txt_radiation_time.text = Common.timeRemaining
                 Common.humanExposure += (Common.reactorOutput * Common.rC) / Common.pcClothes
                 Common.safteyLimit -= (Common.reactorOutput * Common.rC) / Common.pcClothes
-                txt_unit.text = Common.humanExposure.toString()
-                txt_safety_limit.text = Common.safteyLimit.toString()
+
+                txt_unit.text = String.format("%.1f", Common.humanExposure)
+                txt_safety_limit.text = String.format("%.1f", Common.safteyLimit)
                 txt_room_number.text = Common.room.toString()
             }
 
@@ -150,7 +116,6 @@ class NuclearTechnicianActivity : AppCompatActivity() {
 
             }
         }
-
     }
 
     // Method to get days hours minutes seconds from milliseconds

@@ -21,7 +21,7 @@
 
     <LinearLayout
         android:layout_marginTop="25dp"
-        android:orientation="horizontal"
+        android:orientation="vertical"
         android:layout_width="340dp"
         android:layout_height="50dp"
         android:background="@color/colorWhite"
