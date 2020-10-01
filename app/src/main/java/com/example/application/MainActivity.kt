@@ -14,6 +14,7 @@ import android.os.Handler
 import android.util.Log
 import android.view.View
 import android.widget.Toast
+import com.example.application.Common.Common
 import com.example.application.Data.Common_2
 import com.google.firebase.firestore.*
 import kotlinx.android.synthetic.main.activity_main.*
@@ -222,10 +223,10 @@ class MainActivity : AppCompatActivity() {
 
                             }
                             MESSAGE_RADIATION -> {
-                                //TODO handle the radiation change
                                 Log.i(TAG, "Message type : Radiation")
                                 var radation = message.substring(1,message.length)
                                 Log.i(TAG, "Radiation: "+radation)
+                                Common.reactorOutput = radation.toDouble()
                             }
                         }
 
