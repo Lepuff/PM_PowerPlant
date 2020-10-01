@@ -30,6 +30,8 @@ class NuclearUserActivity : AppCompatActivity() {
         getNuclearTechnician()
     }
 
+
+
     private fun getNuclearTechnician() {
 
         val userRef: CollectionReference = FirebaseFirestore.getInstance().collection("User")

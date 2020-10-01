@@ -1,9 +1,13 @@
 package com.example.application.Data
 
+import android.os.CountDownTimer
+
 class Common {
 
 
     companion object {
+
+        lateinit var countdown_timer: CountDownTimer
         var currentUserId: String? = null
         var currentUsername: String? = null
         var currentRole: Boolean? = null
@@ -29,6 +33,7 @@ class Common {
         val countDownInterval: Long = 1000
         var timeRemaining: String = ""
 
+        var isRunning: Boolean = false;
         var untilFinished: Long = 0
 
     }

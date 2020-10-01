@@ -22,6 +22,7 @@ import java.io.IOException
 import java.io.InputStream
 import java.io.OutputStream
 import java.util.*
+import kotlin.concurrent.timer
 
 class MainActivity : AppCompatActivity() {
 
@@ -42,12 +43,15 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        ConnectToDevice(this).execute()
 
         Handler().postDelayed({
             btMessenger = BluetoothMessageThread(m_bluetoothSocket!!)
             btMessenger!!.start()
         }, 3000)
+
+        ConnectToDevice(this).execute()
+
+
 
 
         nuclear_technician_button.setOnClickListener {
@@ -190,9 +194,11 @@ class MainActivity : AppCompatActivity() {
         Common.currentUsername = null
         Common.room = null
         Common.hazmatSuitOn = null
-
-        nuclearTechnicianActivity.timer(Common.millisInFuture, Common.countDownInterval)
-}
+        Common.humanExposure = 0.0
+        Common.safteyLimit = 500000.0
+        Common.isRunning = false
+        Common.countdown_timer.cancel()
+    }
 
     inner class BluetoothMessageThread(bluetoothSocket: BluetoothSocket) : Thread(){
 
@@ -225,6 +231,8 @@ class MainActivity : AppCompatActivity() {
 
                                 Log.i(TAG, "ID: "+id)
                                 checkInUser(id)
+
+
 
                             }
                             MESSAGE_RADIATION -> {
@@ -292,5 +300,6 @@ class MainActivity : AppCompatActivity() {
         }
         finish()
     }
+
 
 }
