@@ -66,7 +66,12 @@ class NuclearTechnicianActivity : AppCompatActivity() {
     fun timer(millisInFuture:Long,countDownInterval:Long) {
     Common.countdown_timer = object : CountDownTimer(millisInFuture,countDownInterval) {
         override fun onFinish() {
-
+            val builder = AlertDialog.Builder(this@NuclearTechnicianActivity)
+            builder.setTitle("WARNING")
+            builder.setMessage("GET OUT NOW")
+            builder.setNeutralButton("Ok", {dialog, which -> })
+            val dialog: AlertDialog = builder.create()
+            dialog.show()
         }
 
         override fun onTick(p0: Long) {
