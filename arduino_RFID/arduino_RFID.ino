@@ -9,7 +9,7 @@ const char LOGGEDOUT = '0';
 const char LOGGEDIN = '1';
 const char WARNING = '2';
 const int RADIATION_CHECK_DELAY = 300;
-const int NOISE_FILTER_VALUE = 3;
+const int NOISE_FILTER_VALUE = 1;
 
 const String ID = "1"; //message identifier for sending tag-ID
 const String RADIATION = "2"; //message identifier for sending radiation-level
