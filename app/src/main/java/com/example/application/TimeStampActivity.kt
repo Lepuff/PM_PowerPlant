@@ -57,9 +57,10 @@ class TimeStampActivity : AppCompatActivity() {
 
                     } else {
                         for (document in task.result!!) {
-                            timeStamp.add(TimeStamp(document.getTimestamp("clock_In")!!.toDate(),document.getTimestamp("clock_Out")!!.toDate(), document.getDouble("hours"), document.getDouble("radiation_Exposed") ))
+
+                            timeStamp.add(TimeStamp(document.getTimestamp("clock_In"),document.getTimestamp("clock_Out"), document.getDouble("hours"), document.getDouble("radiation_Exposed") ))
                         }
-                        timeStampList.sortWith(compareBy { Timestamp.now() })
+                        timeStampList.sortWith(compareBy { it.clock_In })
                         val adapter = TimeStampAdapter(applicationContext, timeStamp)
                         recyclerView.adapter = adapter
                     }

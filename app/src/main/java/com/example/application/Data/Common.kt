@@ -1,16 +1,20 @@
 package com.example.application.Data
 
 import android.os.CountDownTimer
+import com.google.firebase.Timestamp
+import java.text.SimpleDateFormat
+import java.util.*
 
 class Common {
 
 
     companion object {
 
-        lateinit var countdown_timer: CountDownTimer
+        var countdown_timer: CountDownTimer? = null
         var currentUserId: String? = null
         var currentUsername: String? = null
         var currentRole: Boolean? = null
+        var currentCheckInTime: Date? = null
         var ifCheckIn: Boolean? = null
         var room: Int? = null
         var hazmatSuitOn: Boolean? = null
@@ -36,6 +40,9 @@ class Common {
         var isRunning: Boolean = false;
         var untilFinished: Long = 0
 
+        var simpleDateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
+
+        const val KEY_DESTROY = "DESTROY"
     }
 
 

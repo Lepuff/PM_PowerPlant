@@ -16,16 +16,21 @@ import android.view.View
 import android.widget.Toast
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.example.application.Data.Common
+import com.example.application.Model.TimeStamp
+import com.google.firebase.Timestamp
 import com.google.firebase.firestore.*
 import kotlinx.android.synthetic.main.activity_main.*
 import java.io.IOException
 import java.io.InputStream
 import java.io.OutputStream
+import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.concurrent.timer
 
 class MainActivity : AppCompatActivity() {
 
+    private lateinit var localBroadcastManager: LocalBroadcastManager
+    private lateinit var simpleDateFormat: SimpleDateFormat
 
     companion object {
         var m_myUUID: UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB")
@@ -37,7 +42,6 @@ class MainActivity : AppCompatActivity() {
         var btMessenger : BluetoothMessageThread? = null
     }
 
-    private val nuclearTechnicianActivity = NuclearTechnicianActivity()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -51,8 +55,8 @@ class MainActivity : AppCompatActivity() {
 
         ConnectToDevice(this).execute()
 
-
-
+        simpleDateFormat = SimpleDateFormat("dd_MM_yyyy", Locale.getDefault())
+        localBroadcastManager = LocalBroadcastManager.getInstance(this)
 
         nuclear_technician_button.setOnClickListener {
             startActivity(Intent(this@MainActivity, NuclearTechnicianActivity::class.java))
@@ -136,29 +140,60 @@ class MainActivity : AppCompatActivity() {
                                             if(documentSnapshot.getBoolean("clock_In")!!) {
                                                 userRef.update(mapOf(
                                                     "clock_In" to false
-
                                                 ))
                                                 Common.ifCheckIn = false
-                                                updateUI()
-                                                sendCommand("1")
                                             }
                                             else {
                                                 userRef.update(mapOf(
                                                     "clock_In" to true
-
                                                 ))
                                                 Common.ifCheckIn = true
-                                                updateUI()
-                                                sendCommand("0")
                                             }
+                                            checkWork()
                                         }
                                     }
-
                             }
                         }
                     }
                 }
             }
+
+    }
+
+    private fun checkWork() {
+
+        if(Common.ifCheckIn!!) {
+            Common.currentCheckInTime = Timestamp.now().toDate()
+        }
+
+        val workRef: DocumentReference = FirebaseFirestore.getInstance()
+            .collection("Work").document(Common.currentUserId!!).collection("Date").document(Common.currentCheckInTime!!.toString())
+
+        if(Common.ifCheckIn!!) {
+            val timeStamp = TimeStamp(Timestamp(Common.currentCheckInTime), null, null, null)
+            workRef.set(timeStamp)
+                .addOnSuccessListener {
+                    updateUI()
+                    sendCommand("0")
+                }
+                .addOnCanceledListener {
+                    Log.d("Test", "Timestamp funkar ej")
+                }
+        } else {
+            workRef.update(mapOf(
+                "clock_Out" to Timestamp.now().toDate(),
+                "hours" to 4,
+                "radiation_Exposed" to 2
+            )).addOnSuccessListener {
+                updateUI()
+                sendCommand("1")
+                val intent = Intent(Common.KEY_DESTROY)
+                localBroadcastManager.sendBroadcast(intent)
+            }.addOnCanceledListener {
+                Log.d("Test", "check out funkar ej")
+            }
+
+        }
 
     }
 
@@ -192,12 +227,13 @@ class MainActivity : AppCompatActivity() {
         Common.currentRole = null
         Common.currentUserId = null
         Common.currentUsername = null
+        Common.ifCheckIn = false
         Common.room = null
         Common.hazmatSuitOn = null
+        Common.currentCheckInTime = null
         Common.humanExposure = 0.0
         Common.safteyLimit = 500000.0
         Common.isRunning = false
-        Common.countdown_timer.cancel()
     }
 
     inner class BluetoothMessageThread(bluetoothSocket: BluetoothSocket) : Thread(){
@@ -276,7 +312,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun sendCommand(input: String) {
+    fun sendCommand(input: String) {
         val TAG = "BT_sendCommand"
         try {
             if (m_bluetoothSocket != null) {

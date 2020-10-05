@@ -1,8 +1,10 @@
 package com.example.application
 import android.app.*
+import android.content.BroadcastReceiver
 
 import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.os.Build
@@ -15,6 +17,7 @@ import android.widget.RemoteViews
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
 
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -32,9 +35,15 @@ class NuclearTechnicianActivity : AppCompatActivity() {
     private lateinit var builder : Notification.Builder
     private val channelId = "com.example.application"
     private val description = "Test notification"
+    private var mainActivity = MainActivity()
+    private lateinit var localBroadcastManager: LocalBroadcastManager
 
-
-
+    private val checkOutReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            Common.countdown_timer!!.cancel()
+            startActivity(Intent(this@NuclearTechnicianActivity, MainActivity::class.java))
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
@@ -53,50 +62,46 @@ class NuclearTechnicianActivity : AppCompatActivity() {
                 startTimer()}
         }
 
-
-
+        localBroadcastManager = LocalBroadcastManager.getInstance(this)
+        localBroadcastManager.registerReceiver(checkOutReceiver, IntentFilter(Common.KEY_DESTROY))
         notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
         timeStamp_button.setOnClickListener {
             startActivity(Intent(this@NuclearTechnicianActivity, TimeStampActivity::class.java))
         }
 
-
     }
     fun timer(millisInFuture:Long,countDownInterval:Long) {
-    Common.countdown_timer = object : CountDownTimer(millisInFuture,countDownInterval) {
-        override fun onFinish() {
-            val builder = AlertDialog.Builder(this@NuclearTechnicianActivity)
-            builder.setTitle("WARNING")
-            builder.setMessage("GET OUT NOW")
-            builder.setNeutralButton("Ok", {dialog, which -> })
-            val dialog: AlertDialog = builder.create()
-            dialog.show()
+        Common.countdown_timer = object : CountDownTimer(millisInFuture,countDownInterval) {
+            override fun onFinish() {
+                val builder = AlertDialog.Builder(this@NuclearTechnicianActivity)
+                builder.setTitle("WARNING")
+                builder.setMessage("GET OUT NOW")
+                builder.setNeutralButton("Ok", {dialog, which -> })
+                val dialog: AlertDialog = builder.create()
+                dialog.show()
+                mainActivity.sendCommand("2")
+            }
+
+            override fun onTick(p0: Long) {
+                whichRoom()
+                notificationInterval()
+
+                Common.timeRemaining = timeString(Common.untilFinished)
+                txt_radiation_time.text = Common.timeRemaining
+                Common.humanExposure += (Common.reactorOutput * Common.rC) / Common.pcClothes
+                Common.safteyLimit -= (Common.reactorOutput * Common.rC) / Common.pcClothes
+
+                txt_unit.text = String.format("%.1f", Common.humanExposure)
+                txt_safety_limit.text = String.format("%.1f", Common.safteyLimit)
+                txt_room_number.text = Common.room.toString()
+            }
         }
 
-        override fun onTick(p0: Long) {
-            whichRoom()
-            notificationInterval()
 
-            Common.timeRemaining = timeString(Common.untilFinished)
-            txt_radiation_time.text = Common.timeRemaining
-            Common.humanExposure += (Common.reactorOutput * Common.rC) / Common.pcClothes
-            Common.safteyLimit -= (Common.reactorOutput * Common.rC) / Common.pcClothes
+        Common.countdown_timer!!.start()
 
-            txt_unit.text = String.format("%.1f", Common.humanExposure)
-            txt_safety_limit.text = String.format("%.1f", Common.safteyLimit)
-            txt_room_number.text = Common.room.toString()
-        }
-    }
-
-
-    Common.countdown_timer.start()
-
-    Common.isRunning = true
-
-
-
-
+        Common.isRunning = true
     }
 
     private fun startTimer(){
@@ -191,11 +196,9 @@ class NuclearTechnicianActivity : AppCompatActivity() {
     }
 
     override fun onDestroy() {
-        Common.countdown_timer.cancel()
+        Common.countdown_timer!!.cancel()
         Toast.makeText(this, "DESTROY", Toast.LENGTH_SHORT).show()
         super.onDestroy()
-
-
     }
 
 }

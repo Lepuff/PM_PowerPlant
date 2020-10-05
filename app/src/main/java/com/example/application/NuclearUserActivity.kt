@@ -18,6 +18,7 @@ class NuclearUserActivity : AppCompatActivity() {
     private lateinit var viewManager: RecyclerView.LayoutManager
 
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_nuclear_user)

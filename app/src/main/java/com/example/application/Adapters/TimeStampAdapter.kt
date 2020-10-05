@@ -1,12 +1,15 @@
 package com.example.application.Adapters
 
 import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.TextView
 import com.example.application.Model.TimeStamp
 import com.example.application.R
 import androidx.recyclerview.widget.RecyclerView
+import com.example.application.Data.Common
+import com.example.application.Model.TimeStamps
 import kotlin.collections.ArrayList
 
 
@@ -43,14 +46,10 @@ class TimeStampAdapter(var context: Context, var arrayList: ArrayList<TimeStamp>
             }
 
             fun bind(timeStamp: TimeStamp) {
-
-
-
                 clockInText?.text = timeStamp.clock_In.toString()
                 clockOutText?.text = timeStamp.clock_Out.toString()
                 hoursText?.text = timeStamp.hours.toString()
                 radiationExposedText?.text = timeStamp.radiation_Exposed.toString()
-
 
             }
 
