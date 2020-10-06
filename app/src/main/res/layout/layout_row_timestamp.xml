@@ -31,7 +31,7 @@
             <TextView
                 android:id="@+id/txt_row_clocked_in"
                 android:textColor="@color/colorWhite"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="00:00:0000"/>
 
@@ -56,7 +56,7 @@
                 android:gravity="end"
                 android:id="@+id/txt_row_clocked_out"
                 android:textColor="@color/colorWhite"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="00:00:0000"/>
 

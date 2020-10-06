@@ -19,7 +19,7 @@ class Common {
         var room: Int? = null
         var hazmatSuitOn: Boolean? = null
 
-        var safteyLimit: Double = 500000.0
+        var safteyLimit: Double = 50.0
         val rcBreakRoom: Double = 0.1
         val rcControlRoom: Double = 0.5
         val rcReactorRoom: Double = 1.6
@@ -39,8 +39,6 @@ class Common {
 
         var isRunning: Boolean = false;
         var untilFinished: Long = 0
-
-        var simpleDateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
 
         const val KEY_DESTROY = "DESTROY"
     }

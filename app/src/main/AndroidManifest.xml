@@ -15,14 +15,15 @@
         android:theme="@style/AppTheme">
         <activity android:name=".NuclearUserActivity"></activity>
         <activity android:name=".PowerPlantManagerActivity" />
-        <activity android:name=".TimeStampActivity" />
-        <activity android:name=".NuclearTechnicianActivity">
+        <activity android:name=".TimeStampActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
         </activity>
+        <activity android:name=".NuclearTechnicianActivity"/>
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

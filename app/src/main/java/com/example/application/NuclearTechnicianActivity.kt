@@ -13,6 +13,7 @@ import kotlinx.android.synthetic.main.activity_nuclear_technician.*
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.util.Log
+import android.view.View
 import android.widget.RemoteViews
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
@@ -22,6 +23,7 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import java.util.*
 import java.util.concurrent.TimeUnit
 import com.example.application.Data.Common
+import kotlinx.android.synthetic.main.activity_main.*
 import kotlin.String
 
 
@@ -41,7 +43,7 @@ class NuclearTechnicianActivity : AppCompatActivity() {
     private val checkOutReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
             Common.countdown_timer!!.cancel()
-            startActivity(Intent(this@NuclearTechnicianActivity, MainActivity::class.java))
+            finish()
         }
     }
 
@@ -49,6 +51,9 @@ class NuclearTechnicianActivity : AppCompatActivity() {
 
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_nuclear_technician)
+
+
+
         if(Common.hazmatSuitOn == true){
             Common.pC = Common.pcHazmatSuit
         }
@@ -67,10 +72,29 @@ class NuclearTechnicianActivity : AppCompatActivity() {
         notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
         timeStamp_button.setOnClickListener {
-            startActivity(Intent(this@NuclearTechnicianActivity, TimeStampActivity::class.java))
+            if(Common.currentRole!!) {
+                startActivity(Intent(this@NuclearTechnicianActivity, PowerPlantManagerActivity::class.java))
+            }else{
+                startActivity(Intent(this@NuclearTechnicianActivity, TimeStampActivity::class.java))
+            }
+        }
+
+        setUI()
+    }
+
+    private fun setUI() {
+
+        if(Common.currentRole!!) {
+            mainText.text = "Power plant Manager"
+            timeStamp_button.text = "Nuclear User"
+        }
+        else {
+            mainText.text = "Nuclear Technician"
+            timeStamp_button.text = "TimeStamps"
         }
 
     }
+
     fun timer(millisInFuture:Long,countDownInterval:Long) {
         Common.countdown_timer = object : CountDownTimer(millisInFuture,countDownInterval) {
             override fun onFinish() {
@@ -127,7 +151,7 @@ class NuclearTechnicianActivity : AppCompatActivity() {
 
         when (Common.timeRemaining) {
             "01 day: 22 hour: 17 min: 40 sec" -> notification()
-            "01 day: 22 hour: 17 min: 20 sec" -> notification()
+            "01 day: 22 hour: 17 min: 25 sec" -> notification()
             "00 day: 01 hour: 00 min: 00 sec" -> notification()
             "00 day: 00 hour: 30 min: 00 sec" -> notification()
             "00 day: 00 hour: 10 min: 00 sec" -> notification()
@@ -168,7 +192,7 @@ class NuclearTechnicianActivity : AppCompatActivity() {
 
         val contentView = RemoteViews(packageName,R.layout.activity_notification)
 
-        contentView.setTextViewText(R.id.tv_title,"Alert")
+        contentView.setTextViewText(R.id.tv_title,"Warning")
         contentView.setTextViewText(R.id.tv_content,"You have " + Common.timeRemaining + "  left")
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -197,7 +221,6 @@ class NuclearTechnicianActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         Common.countdown_timer!!.cancel()
-        Toast.makeText(this, "DESTROY", Toast.LENGTH_SHORT).show()
         super.onDestroy()
     }
 

@@ -62,10 +62,6 @@ class MainActivity : AppCompatActivity() {
             startActivity(Intent(this@MainActivity, NuclearTechnicianActivity::class.java))
         }
 
-        power_plant_button.setOnClickListener {
-            startActivity(Intent(this@MainActivity, PowerPlantManagerActivity::class.java))
-        }
-
     }
 
     private class ConnectToDevice(c: Context) : AsyncTask<Void, Void, String>() {
@@ -170,7 +166,7 @@ class MainActivity : AppCompatActivity() {
             .collection("Work").document(Common.currentUserId!!).collection("Date").document(Common.currentCheckInTime!!.toString())
 
         if(Common.ifCheckIn!!) {
-            val timeStamp = TimeStamp(Timestamp(Common.currentCheckInTime), null, null, null)
+            val timeStamp = TimeStamp(Timestamp(Common.currentCheckInTime), Timestamp(Common.currentCheckInTime), null, null)
             workRef.set(timeStamp)
                 .addOnSuccessListener {
                     updateUI()
@@ -202,21 +198,13 @@ class MainActivity : AppCompatActivity() {
             checkbox.text = getString(R.string.check_out)
             checkbox.setTextColor(Color.WHITE)
             checkbox.setBackgroundColor(Color.RED)
-            if(Common.currentRole!!) {
-                startActivity(Intent(this@MainActivity, PowerPlantManagerActivity::class.java))
-                power_plant_button.visibility = View.VISIBLE
-
-            }
-            else {
-                startActivity(Intent(this@MainActivity, NuclearTechnicianActivity::class.java))
-                nuclear_technician_button.visibility = View.VISIBLE
-            }
+            startActivity(Intent(this@MainActivity, NuclearTechnicianActivity::class.java))
+            nuclear_technician_button.visibility = View.VISIBLE
         }
         else {
             checkbox.text = getString(R.string.check_in)
             checkbox.setTextColor(Color.BLACK)
             nuclear_technician_button.visibility = View.GONE
-            power_plant_button.visibility = View.GONE
             checkbox.setBackgroundColor(Color.WHITE)
 
             resetCommonData()

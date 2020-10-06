@@ -10,6 +10,10 @@ import com.example.application.R
 import androidx.recyclerview.widget.RecyclerView
 import com.example.application.Data.Common
 import com.example.application.Model.TimeStamps
+import com.google.firebase.Timestamp
+import java.text.SimpleDateFormat
+import java.time.Instant
+import java.util.*
 import kotlin.collections.ArrayList
 
 
@@ -37,22 +41,32 @@ class TimeStampAdapter(var context: Context, var arrayList: ArrayList<TimeStamp>
             private var hoursText: TextView? = null
             private var radiationExposedText: TextView? = null
 
-
             init {
                 clockInText = itemView.findViewById(R.id.txt_row_clocked_in)
                 clockOutText = itemView.findViewById(R.id.txt_row_clocked_out)
                 hoursText = itemView.findViewById(R.id.txt_row_hours)
                 radiationExposedText =  itemView.findViewById(R.id.txt_row_radiation_exposed)
+
             }
 
             fun bind(timeStamp: TimeStamp) {
-                clockInText?.text = timeStamp.clock_In.toString()
-                clockOutText?.text = timeStamp.clock_Out.toString()
+
+                clockInText?.text = getDateTime(timeStamp.clock_In!!.toDate())
+                clockOutText?.text = getDateTime(timeStamp.clock_Out!!.toDate())
                 hoursText?.text = timeStamp.hours.toString()
                 radiationExposedText?.text = timeStamp.radiation_Exposed.toString()
 
             }
 
+            private fun getDateTime(date: Date): String? {
+                try {
+                    val sdf = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())
+                    return sdf.format(date)
+
+                } catch (e: Exception) {
+                    return e.toString()
+                }
+            }
         }
 
 

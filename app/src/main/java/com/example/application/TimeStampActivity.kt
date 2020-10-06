@@ -2,12 +2,14 @@ package com.example.application
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.application.Model.TimeStamp
 import com.example.application.Adapters.TimeStampAdapter
 import com.example.application.Data.Common
+import com.example.application.Model.TimeStamps
 import com.google.firebase.Timestamp
 import com.google.firebase.firestore.*
 
@@ -35,6 +37,7 @@ class TimeStampActivity : AppCompatActivity() {
 
     private fun getTimeStamps() {
 
+
         val userId: String = if(Common.currentRole!!) {
             intent.getStringExtra("userId")!!
         }
@@ -57,7 +60,6 @@ class TimeStampActivity : AppCompatActivity() {
 
                     } else {
                         for (document in task.result!!) {
-
                             timeStamp.add(TimeStamp(document.getTimestamp("clock_In"),document.getTimestamp("clock_Out"), document.getDouble("hours"), document.getDouble("radiation_Exposed") ))
                         }
                         timeStampList.sortWith(compareBy { it.clock_In })
