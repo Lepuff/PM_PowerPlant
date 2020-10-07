@@ -1,0 +1,19 @@
+<resources>
+    <string name="app_name">Application</string>
+    <string name="nuclear_technician">Nuclear Technician</string>
+    <string name="clocked_in">Clocked In:</string>
+    <string name="clocked_out">Clocked Out:</string>
+    <string name="hours">Hours:</string>
+    <string name="radiation_exposed">Radiation Exposed:</string>
+    <string name="room">Room</string>
+    <string name="timestamps">Timestamps</string>
+    <string name="safety_limit">Safety limit</string>
+    <string name="unit">Unit</string>
+    <string name="radiation_time_limit">Radiation time limit:</string>
+    <string name="name">Name</string>
+
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="check_in">CHECK IN</string>
+    <string name="check_out">CHECK OUT</string>
+    <string name="no_users">No users</string>
+</resources>
