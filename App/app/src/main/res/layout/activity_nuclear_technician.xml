@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorGrey"
+    android:orientation="vertical"
+    tools:context=".NuclearTechnicianActivity">
+
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:textColor="@color/colorWhite"
+        android:textSize="26sp"
+        android:layout_marginTop="15dp"
+        android:text="@string/nuclear_technician" />
+
+
+    <LinearLayout
+        android:layout_marginTop="25dp"
+        android:orientation="horizontal"
+        android:layout_width="340dp"
+        android:layout_height="50dp"
+        android:background="@color/colorWhite"
+        android:layout_gravity="center"
+        android:gravity="center_horizontal|center_vertical"
+        >
+
+        <TextView
+            android:textColor="@color/colorBlack"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Radiation time limit:"
+            android:layout_marginRight="10dp"
+            android:layout_marginEnd="10dp"
+            android:textSize="16sp"/>
+
+        <TextView
+            android:textColor="@color/colorBlack"
+            android:id="@+id/txt_radiation_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="00:00:0000"
+            android:textSize="16sp"
+            />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_marginLeft="35dp"
+        android:layout_marginRight="35dp"
+        android:orientation="horizontal"
+        android:layout_marginTop="25dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="60dp"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Unit"
+                android:textColor="@color/colorWhite"
+                android:textSize="26sp"/>
+
+            <TextView
+                android:id="@+id/txt_unit"
+                android:textAlignment="center"
+                android:background="@color/colorWhite"
+                android:textColor="@color/colorBlack"
+                android:text="XXX"
+                android:textSize="18sp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_marginRight="40dp"
+            android:layout_marginLeft="40dp"
+            android:gravity="center_horizontal"
+            android:orientation="vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Safety limit"
+                android:textColor="@color/colorWhite"
+                android:textSize="26sp"/>
+
+            <TextView
+                android:id="@+id/txt_safety_limit"
+                android:textAlignment="center"
+                android:background="@color/colorWhite"
+                android:text="XXX"
+                android:textColor="@color/colorBlack"
+                android:textSize="18sp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Room"
+                android:textColor="@color/colorWhite"
+                android:textSize="26sp"/>
+
+            <TextView
+                android:id="@+id/txt_room_number"
+                android:textAlignment="center"
+                android:layout_gravity="end"
+                android:background="@color/colorWhite"
+                android:text="XXX"
+                android:textColor="@color/colorBlack"
+                android:textSize="18sp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+
+        </LinearLayout>
+
+
+    </LinearLayout>
+
+    <Button
+        android:layout_gravity="center_horizontal"
+        android:id="@+id/btn_ts"
+        android:layout_marginTop="80dp"
+        android:layout_width="340dp"
+        android:layout_height="130dp"
+        android:background="@color/colorWhite"
+        android:textSize="20sp"
+        android:text="Timestamps">
+
+    </Button>
+    <Button
+        android:id="@+id/startListeningButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="start listening"/>
+
+
+
+
+</LinearLayout>
