@@ -22,7 +22,6 @@ unsigned long timer = 0;
 
 SoftwareSerial BTserial(A4, A3); //RX | TX
 String tagID = ""; // our tags "565EE2F7" && "699FC756"
-bool loggedIn;
 
 MFRC522 mfrc522(SS_PIN, RST_PIN);
 LiquidCrystal lcd(7, 6, 5, 4, 3, 2); //Parameters: (rs, enable, d4, d5, d6, d7)
@@ -35,10 +34,9 @@ void setup() {
   lcd.begin(16, 2); //LCD screen
   lcd.clear();
   lcd.setCursor(0, 0);
-  lcd.print("Scan Your Card ");
 
   timer = millis();
-  potentioVal = map(analogRead(potentioPin), 0, 1023, 0, 100);
+  potentioVal = map(analogRead(potentioPin), 0, 1023, 1, 100);
   previousVal = potentioVal;
   Serial.begin(9600);
   BTserial.begin(9600);
@@ -47,7 +45,7 @@ void setup() {
 void loop() {
 
   if (millis() >= timer + RADIATION_CHECK_DELAY) {
-    potentioVal = map(analogRead(potentioPin), 0, 1023, 0, 100);
+    potentioVal = map(analogRead(potentioPin), 0, 1023, 1, 100);
     if (potentioVal > previousVal + NOISE_FILTER_VALUE || potentioVal < previousVal - NOISE_FILTER_VALUE) {
       String message = RADIATION; // RADIATION == "2" -> identifier for message
       message.concat(potentioVal);
@@ -69,7 +67,6 @@ void loop() {
   while (getID()) {
     BTserial.print(tagID);
     Serial.print(tagID);
-    delay(500);
   }
 
   if (BTserial.available()) {
@@ -78,14 +75,14 @@ void loop() {
     firstChar = BTserial.readString().charAt(0);
 
     switch (firstChar) { //state machine for receiving messages via bluetooth
-      case LOGGEDOUT: //user is not logged in -> login user
-        lcd.print(" Logged in");
+      case LOGGEDOUT: //user is checked out -> check user
+        lcd.print("Clocked In");
         Serial.println(BTserial.readString().charAt(0)); //for debugging
         delay(1000);
         break;
 
-      case LOGGEDIN: //user is logged in -> logout user
-        lcd.print(" Logged out");
+      case LOGGEDIN: //user is checked in -> check out user
+        lcd.print("Clocked Out");
         Serial.println(BTserial.readString().charAt(0)); //for debugging
         delay(1000);
         break;
@@ -98,6 +95,8 @@ void loop() {
         break;
 
       default:
+        lcd.print("Error: ");
+        lcd.print(firstChar);
         Serial.print("Unknown message in state machine: ");
         Serial.println(firstChar);
         break;
